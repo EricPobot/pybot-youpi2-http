@@ -104,7 +104,7 @@ class InterruptibleWSGIServer(bottle.WSGIRefServer):
 
                 panel.write_at(url[:20].ljust(20), line=3)
 
-                panel.write_at("code=%s size=%s" % (code, size), line=4)
+                panel.center_text_at("code=%s size=%s" % (code, size), line=4)
 
                 return WSGIRequestHandler.log_request(self, code=code, size=size)
 
