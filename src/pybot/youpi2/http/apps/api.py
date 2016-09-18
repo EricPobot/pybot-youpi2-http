@@ -42,7 +42,7 @@ class RestAPIApp(YoupiBottleApp):
         }
 
     def _armerror_as_202(self, e):
-        reason = e.message[-1]
+        reason = e.message.strip()[-1]
         self.log_error(reason)
         response.status = "202 " + reason
 
