@@ -2,7 +2,7 @@
 
 import httplib
 
-from bottle import HTTPError, request, response
+from bottle import HTTPError, request, response, error
 
 from pybot.youpi2.model import YoupiArm
 from pybot.youpi2.app import ArmError
@@ -36,6 +36,11 @@ class RestAPIApp(YoupiBottleApp):
     def _http_error(self, status, msg):
         self.log_error(msg)
         return HTTPError(status, msg)
+
+    def _http_404(self, what):
+        response.status = '404 Not Found: %s' % what
+        self.log_error(response.status)
+        return {"what": what}
 
     @staticmethod
     def _pythonize_values_dict(d):
@@ -82,7 +87,7 @@ class RestAPIApp(YoupiBottleApp):
         try:
             angles = {YoupiArm.MOTOR_NAMES.index(j): float(a) for j, a in request.query.iteritems()}
         except ValueError as e:
-            return self._http_error(httplib.NOT_FOUND, 'Not Found: %s' % str(e).split()[0])
+            return self._http_404(str(e).split()[0])
 
         if angles:
             try:
@@ -101,12 +106,12 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 joint_id = YoupiArm.MOTOR_NAMES.index(joint)
             except ValueError:
-                return self._http_error(httplib.NOT_FOUND, 'Not Found: %s' % joint)
+                return self._http_404(joint)
 
         try:
             position = float(self.arm.get_joint_positions()[joint_id])
         except IndexError:
-            return self._http_error(httplib.NOT_FOUND, 'Not Found: %s' % joint_id)
+            return self._http_404(joint_id)
         else:
             return {'angle': position}
 
@@ -117,7 +122,7 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 joint_id = YoupiArm.MOTOR_NAMES.index(joint)
             except ValueError:
-                return self._http_error(httplib.NOT_FOUND, 'Not Found: %s' % joint)
+                return self._http_404(joint)
 
         angle = request.query.angle
         if angle:
@@ -139,7 +144,7 @@ class RestAPIApp(YoupiBottleApp):
         try:
             positions = {YoupiArm.MOTOR_NAMES.index(j): float(a) for j, a in request.query.iteritems()}
         except ValueError as e:
-            return self._http_error(httplib.NOT_FOUND, 'Not Found: %s' % str(e).split()[0])
+            return self._http_404(str(e).split()[0])
 
         if positions:
             try:
@@ -158,12 +163,12 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 joint_id = YoupiArm.MOTOR_NAMES.index(motor)
             except ValueError:
-                return self._http_error(httplib.NOT_FOUND, 'Not Found: %s' % motor)
+                return self._http_404(motor)
 
         try:
             position = float(self.arm.get_motor_positions()[joint_id])
         except IndexError:
-            return self._http_error(404, 'Not Found: %s' % joint_id)
+            return self._http_404(joint_id)
         else:
             return {'position': position}
 
@@ -174,7 +179,7 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 joint_id = YoupiArm.MOTOR_NAMES.index(motor)
             except ValueError:
-                return self._http_error(httplib.NOT_FOUND, 'Not Found: %s' % motor)
+                return self._http_404(motor)
 
         position = request.query.position
         if position:
