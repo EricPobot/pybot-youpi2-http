@@ -52,6 +52,7 @@ class HTTPServerApp(YoupiApplication):
         if self.first_loop:
             self.server_thread.start()
             self.first_loop = False
+            self.pnl.center_text_at('Ready', 3)
 
         else:
             # nothing to do here since the server is running in a thread.
