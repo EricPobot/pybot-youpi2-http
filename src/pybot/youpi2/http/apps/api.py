@@ -24,6 +24,8 @@ class RestAPIApp(YoupiBottleApp):
         self.route('/gripper', 'PUT', callback=self.set_gripper_state)
         self.route('/motors', 'GET', callback=self.get_motor_positions)
         self.route('/motors', 'PUT', callback=self.set_motor_positions)
+        self.route('/motor/<motor>', 'GET', callback=self.get_motor_position)
+        self.route('/motor/<motor>', 'PUT', callback=self.set_motor_position)
         self.route('/home', 'PUT', callback=self.go_home)
         self.route('/hi_z', 'PUT', callback=self.hi_z)
         self.route('/calibrate', 'PUT', callback=self.calibrate)
@@ -115,6 +117,37 @@ class RestAPIApp(YoupiBottleApp):
             self.arm.motor_goto(positions, True)
         else:
             return HTTPError(400, 'missing motors settings')
+
+    def get_motor_position(self, motor):
+        try:
+            joint_id = int(motor)
+        except ValueError:
+            try:
+                joint_id = YoupiArm.MOTOR_NAMES.index(motor)
+            except ValueError:
+                return self._http_error(404, 'motor name not found (%s)' % motor)
+
+        try:
+            position = float(self.arm.get_motor_positions()[joint_id])
+        except IndexError:
+            return self._http_error(404, 'motor id not found (%d)' % joint_id)
+        else:
+            return {'position': position}
+
+    def set_motor_position(self, motor):
+        try:
+            joint_id = int(motor)
+        except ValueError:
+            try:
+                joint_id = YoupiArm.MOTOR_NAMES.index(motor)
+            except ValueError:
+                return self._http_error(404, 'motor name not found (%s)' % motor)
+
+        angle = request.query.angle
+        if angle:
+            self.arm.motor_goto({joint_id: float(angle)}, True)
+        else:
+            return HTTPError(400, 'missing angle argument')
 
     def go_home(self):
         self.arm.go_home([m for m in YoupiArm.MOTORS_ALL if m != YoupiArm.MOTOR_GRIPPER], True)
