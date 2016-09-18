@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from bottle import HTTPError, request
+from bottle import HTTPError, request, response
 
 from pybot.youpi2.model import YoupiArm
+from pybot.youpi2.app import ArmError
 
 from pybot.youpi2.http.base import YoupiBottleApp
 from pybot.youpi2.http.__version__ import version
@@ -60,7 +61,10 @@ class RestAPIApp(YoupiBottleApp):
             return self._http_error(404, 'joint name not found (%s)' % str(e).split()[0])
 
         if pose:
-            self.arm.goto(pose, True)
+            try:
+                self.arm.goto(pose, True)
+            except ArmError as e:
+                response.status = "202 " + e.message
         else:
             return HTTPError(400, 'missing pose settings')
 
@@ -71,7 +75,10 @@ class RestAPIApp(YoupiBottleApp):
             return self._http_error(404, 'joint name not found (%s)' % str(e).split()[0])
 
         if angles:
-            self.arm.move(angles, True)
+            try:
+                self.arm.move(angles, True)
+            except ArmError as e:
+                response.status = "202 " + e.message
         else:
             return HTTPError(400, 'missing angles settings')
 
@@ -102,7 +109,10 @@ class RestAPIApp(YoupiBottleApp):
 
         angle = request.query.angle
         if angle:
-            self.arm.goto({joint_id: float(angle)}, True)
+            try:
+                self.arm.goto({joint_id: float(angle)}, True)
+            except ArmError as e:
+                response.status = "202 " + e.message
         else:
             return HTTPError(400, 'missing angle argument')
 
@@ -118,7 +128,10 @@ class RestAPIApp(YoupiBottleApp):
             return self._http_error(404, 'motor name not found (%s)' % str(e).split()[0])
 
         if positions:
-            self.arm.motor_goto(positions, True)
+            try:
+                self.arm.motor_goto(positions, True)
+            except ArmError as e:
+                response.status = "202 " + e.message
         else:
             return HTTPError(400, 'missing motors settings')
 
@@ -149,7 +162,10 @@ class RestAPIApp(YoupiBottleApp):
 
         position = request.query.position
         if position:
-            self.arm.motor_goto({joint_id: float(position)}, True)
+            try:
+                self.arm.motor_goto({joint_id: float(position)}, True)
+            except ArmError as e:
+                response.status = "202 " + e.message
         else:
             return HTTPError(400, 'missing position argument')
 
