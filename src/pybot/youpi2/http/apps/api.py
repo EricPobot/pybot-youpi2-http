@@ -41,6 +41,11 @@ class RestAPIApp(YoupiBottleApp):
             k: float(v) for k, v in d.iteritems()
         }
 
+    def _armerror_as_202(self, e):
+        reason = e.message[-1]
+        self.log_error(reason)
+        response.status = "202 " + reason
+
     def get_version(self):
         return {'version': version}
 
@@ -64,7 +69,7 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 self.arm.goto(pose, True)
             except ArmError as e:
-                response.status = "202 " + e.message
+                self._armerror_as_202(e)
         else:
             return HTTPError(400, 'missing pose settings')
 
@@ -78,7 +83,7 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 self.arm.move(angles, True)
             except ArmError as e:
-                response.status = "202 " + e.message
+                self._armerror_as_202(e)
         else:
             return HTTPError(400, 'missing angles settings')
 
@@ -112,7 +117,7 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 self.arm.goto({joint_id: float(angle)}, True)
             except ArmError as e:
-                response.status = "202 " + e.message
+                self._armerror_as_202(e)
         else:
             return HTTPError(400, 'missing angle argument')
 
@@ -131,7 +136,7 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 self.arm.motor_goto(positions, True)
             except ArmError as e:
-                response.status = "202 " + e.message
+                self._armerror_as_202(e)
         else:
             return HTTPError(400, 'missing motors settings')
 
@@ -165,7 +170,7 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 self.arm.motor_goto({joint_id: float(position)}, True)
             except ArmError as e:
-                response.status = "202 " + e.message
+                self._armerror_as_202(e)
         else:
             return HTTPError(400, 'missing position argument')
 
