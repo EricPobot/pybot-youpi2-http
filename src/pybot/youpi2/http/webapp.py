@@ -64,7 +64,8 @@ class HTTPServerApp(YoupiApplication):
         self.pnl.center_text_at('Processing...', line=4)
 
     def after_request(self):
-        self.pnl.center_text_at("status=%s size=%s" % (bottle.response.status, bottle.response.content_length), line=4)
+        resp = bottle.response
+        self.pnl.center_text_at("status=%s size=%s" % (resp.status, resp.content_length), line=4)
 
     def loop(self):
         if self.first_loop:
