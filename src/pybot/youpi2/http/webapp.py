@@ -39,6 +39,8 @@ class HTTPServerApp(YoupiApplication):
             ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui')
             api_app = RestAPIApp(arm=self.arm, panel=self.pnl, name='app-api')
 
+            app.add_hook('before_request', self.before_request)
+
             app.merge(ui_app.routes)
             app.mount('/api/v1/', api_app)
 
@@ -47,6 +49,14 @@ class HTTPServerApp(YoupiApplication):
             self.log_info('Bottle server terminated')
 
         self.server_thread = threading.Thread(target=bottle_run)
+
+    def before_request(self):
+        self.pnl.write_at(bottle.request.remote_addr, line=2)
+        method = bottle.request.method
+        self.pnl.write_at(' ' + method, line=2, col=self.pnl.width - len(method))
+
+        self.pnl.write_at(bottle.request.path[:20].ljust(20), line=3)
+        self.pnl.center_text_at('Processing...', line=4)
 
     def loop(self):
         if self.first_loop:
@@ -100,12 +110,12 @@ class InterruptibleWSGIServer(bottle.WSGIRefServer):
                 return self.client_address[0]
 
             def log_request(self, code='-', size='-'):
-                method, url, protocol = self.requestline.split()
-
-                panel.write_at(self.client_address[0], line=2)
-                panel.write_at(' ' + method, line=2, col=panel.width - len(method))
-
-                panel.write_at(url[:20].ljust(20), line=3)
+                # method, url, protocol = self.requestline.split()
+                #
+                # panel.write_at(self.client_address[0], line=2)
+                # panel.write_at(' ' + method, line=2, col=panel.width - len(method))
+                #
+                # panel.write_at(url[:20].ljust(20), line=3)
 
                 panel.center_text_at("status=%s size=%s" % (code, size), line=4)
 
