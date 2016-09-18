@@ -55,8 +55,12 @@ class HTTPServerApp(YoupiApplication):
         self.pnl.write_at(bottle.request.remote_addr, line=2)
         method = bottle.request.method
         self.pnl.write_at(' ' + method, line=2, col=self.pnl.width - len(method))
-        req = bottle.request.path + '?' + bottle.request.url_args
-        self.pnl.write_at(req[:20].ljust(20), line=3)
+        qry = bottle.request.query_string
+        if qry:
+            s = bottle.request.path + '?' + qry
+        else:
+            s = bottle.request.path
+        self.pnl.write_at(s[:20].ljust(20), line=3)
         self.pnl.center_text_at('Processing...', line=4)
 
     def after_request(self):
