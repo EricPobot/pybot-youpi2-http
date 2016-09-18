@@ -65,7 +65,10 @@ class HTTPServerApp(YoupiApplication):
 
     def after_request(self):
         resp = bottle.response
-        self.pnl.center_text_at("status=%s size=%s" % (resp.status, resp.content_length), line=4)
+        w = self.pnl.width
+        part1 = ("status=%s" % resp.status_code).ljust(w)
+        part2 = "size=%d" % resp.content_length
+        self.pnl.write_at(part1[:w - len(part2)] + part2, line=4)
 
     def loop(self):
         if self.first_loop:
