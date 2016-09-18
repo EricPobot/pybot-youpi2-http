@@ -19,8 +19,8 @@ class RestAPIApp(YoupiBottleApp):
         self.route('/pose', 'GET', callback=self.get_pose)
         self.route('/pose', 'PUT', callback=self.set_pose)
         self.route('/move', 'PUT', callback=self.move)
-        self.route('/joint/<joint>', 'GET', callback=self.get_joint_position)
-        self.route('/joint/<joint>', 'PUT', callback=self.set_joint_position)
+        self.route('/joint/<joint>', 'GET', callback=self.get_joint_angle)
+        self.route('/joint/<joint>', 'PUT', callback=self.set_joint_angle)
         self.route('/gripper', 'PUT', callback=self.set_gripper_state)
         self.route('/motors', 'GET', callback=self.get_motor_positions)
         self.route('/motors', 'PUT', callback=self.set_motor_positions)
@@ -73,7 +73,7 @@ class RestAPIApp(YoupiBottleApp):
         else:
             return HTTPError(400, 'missing angles settings')
 
-    def get_joint_position(self, joint):
+    def get_joint_angle(self, joint):
         try:
             joint_id = int(joint)
         except ValueError:
@@ -87,9 +87,9 @@ class RestAPIApp(YoupiBottleApp):
         except IndexError:
             return self._http_error(404, 'joint id not found (%d)' % joint_id)
         else:
-            return {'position': position}
+            return {'angle': position}
 
-    def set_joint_position(self, joint):
+    def set_joint_angle(self, joint):
         try:
             joint_id = int(joint)
         except ValueError:
@@ -143,11 +143,11 @@ class RestAPIApp(YoupiBottleApp):
             except ValueError:
                 return self._http_error(404, 'motor name not found (%s)' % motor)
 
-        angle = request.query.angle
-        if angle:
-            self.arm.motor_goto({joint_id: float(angle)}, True)
+        position = request.query.position
+        if position:
+            self.arm.motor_goto({joint_id: float(position)}, True)
         else:
-            return HTTPError(400, 'missing angle argument')
+            return HTTPError(400, 'missing position argument')
 
     def go_home(self):
         self.arm.go_home([m for m in YoupiArm.MOTORS_ALL if m != YoupiArm.MOTOR_GRIPPER], True)
