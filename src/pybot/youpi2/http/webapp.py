@@ -14,9 +14,9 @@ from apps.ui import UIApp
 __author__ = 'Eric Pascual'
 
 
-class WebServerApp(YoupiApplication):
+class HTTPServerApp(YoupiApplication):
     NAME = 'http'
-    TITLE = "Web Server"
+    TITLE = "HTTP Server"
     VERSION = version
 
     server = None
@@ -104,7 +104,7 @@ class InterruptibleWSGIServer(bottle.WSGIRefServer):
 
                 panel.write_at(url[:20].ljust(20), line=3)
 
-                panel.center_text_at("code=%s size=%s" % (code, size), line=4)
+                panel.center_text_at("status=%s size=%s" % (code, size), line=4)
 
                 return WSGIRequestHandler.log_request(self, code=code, size=size)
 
@@ -130,4 +130,4 @@ class InterruptibleWSGIServer(bottle.WSGIRefServer):
 
 
 def main():
-    WebServerApp().main()
+    HTTPServerApp().main()
