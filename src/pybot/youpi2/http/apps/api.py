@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import httplib
+
 from bottle import HTTPError, request, response
 
 from pybot.youpi2.model import YoupiArm
@@ -41,11 +43,11 @@ class RestAPIApp(YoupiBottleApp):
             k: float(v) for k, v in d.iteritems()
         }
 
-    def _armerror_as_202(self, e):
+    def _handle_armerror(self, e):
         reason = e.message.strip().splitlines()[-1]
         self.log_warning(reason)
-        response.status = 202
-        return {"error": reason}
+        response.status = httplib.BAD_REQUEST
+        return {"reason": reason}
 
     def get_version(self):
         return {'version': version}
@@ -70,23 +72,27 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 self.arm.goto(pose, True)
             except ArmError as e:
-                return self._armerror_as_202(e)
+                return self._handle_armerror(e)
+            else:
+                response.status = httplib.NO_CONTENT
         else:
-            return HTTPError(400, 'missing pose settings')
+            return HTTPError(httplib.BAD_REQUEST, 'missing pose settings')
 
     def move(self):
         try:
             angles = {YoupiArm.MOTOR_NAMES.index(j): float(a) for j, a in request.query.iteritems()}
         except ValueError as e:
-            return self._http_error(404, 'joint name not found (%s)' % str(e).split()[0])
+            return self._http_error(httplib.NOT_FOUND, 'joint name not found (%s)' % str(e).split()[0])
 
         if angles:
             try:
                 self.arm.move(angles, True)
             except ArmError as e:
-                return self._armerror_as_202(e)
+                return self._handle_armerror(e)
+            else:
+                response.status = httplib.NO_CONTENT
         else:
-            return HTTPError(400, 'missing angles settings')
+            return HTTPError(httplib.BAD_REQUEST, 'missing angles settings')
 
     def get_joint_angle(self, joint):
         try:
@@ -95,12 +101,12 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 joint_id = YoupiArm.MOTOR_NAMES.index(joint)
             except ValueError:
-                return self._http_error(404, 'joint name not found (%s)' % joint)
+                return self._http_error(httplib.NOT_FOUND, 'joint name not found (%s)' % joint)
 
         try:
             position = float(self.arm.get_joint_positions()[joint_id])
         except IndexError:
-            return self._http_error(404, 'joint id not found (%d)' % joint_id)
+            return self._http_error(httplib.NOT_FOUND, 'joint id not found (%d)' % joint_id)
         else:
             return {'angle': position}
 
@@ -111,14 +117,16 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 joint_id = YoupiArm.MOTOR_NAMES.index(joint)
             except ValueError:
-                return self._http_error(404, 'joint name not found (%s)' % joint)
+                return self._http_error(httplib.NOT_FOUND, 'joint name not found (%s)' % joint)
 
         angle = request.query.angle
         if angle:
             try:
                 self.arm.goto({joint_id: float(angle)}, True)
             except ArmError as e:
-                return self._armerror_as_202(e)
+                return self._handle_armerror(e)
+            else:
+                response.status = httplib.NO_CONTENT
         else:
             return HTTPError(400, 'missing angle argument')
 
@@ -131,15 +139,17 @@ class RestAPIApp(YoupiBottleApp):
         try:
             positions = {YoupiArm.MOTOR_NAMES.index(j): float(a) for j, a in request.query.iteritems()}
         except ValueError as e:
-            return self._http_error(404, 'motor name not found (%s)' % str(e).split()[0])
+            return self._http_error(httplib.NOT_FOUND, 'motor name not found (%s)' % str(e).split()[0])
 
         if positions:
             try:
                 self.arm.motor_goto(positions, True)
             except ArmError as e:
-                return self._armerror_as_202(e)
+                return self._handle_armerror(e)
+            else:
+                response.status = httplib.NO_CONTENT
         else:
-            return HTTPError(400, 'missing motors settings')
+            return HTTPError(httplib.BAD_REQUEST, 'missing motors settings')
 
     def get_motor_position(self, motor):
         try:
@@ -148,7 +158,7 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 joint_id = YoupiArm.MOTOR_NAMES.index(motor)
             except ValueError:
-                return self._http_error(404, 'motor name not found (%s)' % motor)
+                return self._http_error(httplib.NOT_FOUND, 'motor name not found (%s)' % motor)
 
         try:
             position = float(self.arm.get_motor_positions()[joint_id])
@@ -164,22 +174,26 @@ class RestAPIApp(YoupiBottleApp):
             try:
                 joint_id = YoupiArm.MOTOR_NAMES.index(motor)
             except ValueError:
-                return self._http_error(404, 'motor name not found (%s)' % motor)
+                return self._http_error(httplib.NOT_FOUND, 'motor name not found (%s)' % motor)
 
         position = request.query.position
         if position:
             try:
                 self.arm.motor_goto({joint_id: float(position)}, True)
             except ArmError as e:
-                return self._armerror_as_202(e)
+                return self._handle_armerror(e)
+            else:
+                response.status = httplib.NO_CONTENT
         else:
-            return HTTPError(400, 'missing position argument')
+            return HTTPError(httplib.BAD_REQUEST, 'missing position argument')
 
     def go_home(self):
         self.arm.go_home([m for m in YoupiArm.MOTORS_ALL if m != YoupiArm.MOTOR_GRIPPER], True)
+        response.status = httplib.NO_CONTENT
 
     def hi_z(self):
         self.arm.soft_hi_Z()
+        response.status = httplib.NO_CONTENT
 
     def set_gripper_state(self):
         if int(request.query.opened):
@@ -187,6 +201,9 @@ class RestAPIApp(YoupiBottleApp):
         else:
             self.arm.close_gripper(True)
 
+        response.status = httplib.NO_CONTENT
+
     def calibrate(self):
         self.arm.seek_origins(YoupiArm.MOTORS_ALL)
         self.arm.calibrate_gripper(True)
+        response.status = httplib.NO_CONTENT
