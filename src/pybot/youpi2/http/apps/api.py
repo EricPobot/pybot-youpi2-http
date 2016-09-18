@@ -71,7 +71,7 @@ class RestAPIApp(YoupiBottleApp):
         try:
             pose = {YoupiArm.MOTOR_NAMES.index(j): float(a) for j, a in request.query.iteritems()}
         except ValueError as e:
-            return self._http_error(404, 'Not Found: %s' % str(e).split()[0])
+            return self._http_404(str(e).split()[0])
 
         if pose:
             try:
