@@ -35,9 +35,9 @@ class WebServerApp(YoupiApplication):
             self.log_info("Bottle v%s server starting up (using %s)...", bottle.__version__, self.server)
             self.log_info("Listening on http://%s:%d/" % (self.server.host, self.server.port))
 
-            app = YoupiBottleApp(arm=self.arm, panel=self.pnl)
-            ui_app = UIApp(arm=self.arm, panel=self.pnl)
-            api_app = RestAPIApp(arm=self.arm, panel=self.pnl)
+            app = YoupiBottleApp(arm=self.arm, panel=self.pnl, name='app-root')
+            ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui')
+            api_app = RestAPIApp(arm=self.arm, panel=self.pnl, name='app-api')
 
             app.merge(ui_app.routes)
             app.mount('/api/v1/', api_app)
@@ -93,9 +93,7 @@ class InterruptibleWSGIServer(bottle.WSGIRefServer):
         panel = app.panel
 
         class FixedHandler(WSGIRequestHandler):
-            quiet = False
-
-            def address_string(self): # Prevent reverse DNS lookups please.
+            def address_string(self):   # Prevent reverse DNS lookups
                 return self.client_address[0]
 
             def log_request(self, code='-', size='-'):
@@ -108,8 +106,7 @@ class InterruptibleWSGIServer(bottle.WSGIRefServer):
 
                 panel.write_at("code=%s size=%s" % (code, size), line=4)
 
-                if not self.quiet:
-                    return WSGIRequestHandler.log_request(self, code=code, size=size)
+                return WSGIRequestHandler.log_request(self, code=code, size=size)
 
             def log_message(self, msg_format, *args):
                 app.log_info("[%s] %s", self.client_address[0], msg_format % args)

@@ -8,7 +8,7 @@ __author__ = 'Eric Pascual'
 
 class UIApp(YoupiBottleApp):
     def __init__(self, *args, **kwargs):
-        super(UIApp, self).__init__(name='ui', *args, **kwargs)
+        super(UIApp, self).__init__(*args, **kwargs)
 
         self.route('/', 'GET', callback=self.home)
         self.route('/index', 'GET', callback=self.home)

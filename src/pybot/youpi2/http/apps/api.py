@@ -12,9 +12,10 @@ __author__ = 'Eric Pascual'
 
 class RestAPIApp(YoupiBottleApp):
     def __init__(self, *args, **kwargs):
-        super(RestAPIApp, self).__init__(name='api', *args, **kwargs)
+        super(RestAPIApp, self).__init__(*args, **kwargs)
 
         self.route('/version', 'GET', callback=self.get_version)
+        self.route('/settings', 'GET', callback=self.get_settings)
         self.route('/pose', 'GET', callback=self.get_pose)
         self.route('/pose', 'PUT', callback=self.set_pose)
         self.route('/position/<joint>', 'GET', callback=self.get_joint_position)
@@ -30,6 +31,11 @@ class RestAPIApp(YoupiBottleApp):
 
     def get_version(self):
         return {'version': version}
+
+    def get_settings(self):
+        return {
+            YoupiArm.MOTOR_NAMES[j]: s for j, s in enumerate(self.arm.get_settings())
+        }
 
     def get_pose(self):
         return {YoupiArm.MOTOR_NAMES[j]: float(p) for j, p in enumerate(self.arm.get_current_positions())}
