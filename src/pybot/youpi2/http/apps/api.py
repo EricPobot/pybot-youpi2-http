@@ -50,7 +50,7 @@ class RestAPIApp(YoupiBottleApp):
 
     def get_pose(self):
         return {
-            YoupiArm.MOTOR_NAMES[k]: v for k, v in self.arm.get_joint_positions()
+            YoupiArm.MOTOR_NAMES[k]: v for k, v in enumerate(self.arm.get_joint_positions())
         }
 
     def set_pose(self):
@@ -108,7 +108,7 @@ class RestAPIApp(YoupiBottleApp):
 
     def get_motor_positions(self):
         return {
-            YoupiArm.MOTOR_NAMES[k]: v for k, v in self.arm.get_motor_positions()
+            YoupiArm.MOTOR_NAMES[k]: v for k, v in enumerate(self.arm.get_motor_positions())
         }
 
     def set_motor_positions(self):
