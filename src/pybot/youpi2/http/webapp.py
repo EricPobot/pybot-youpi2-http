@@ -63,7 +63,9 @@ class HTTPServerApp(YoupiApplication):
                 return True
 
     def teardown(self, exit_code):
+        self.pnl.center_text_at('', 2)
         self.pnl.center_text_at('Terminating...', 3)
+        self.pnl.center_text_at('', 3)
 
         if self.server:
             self.log_info('sending shutdown signal to server')
