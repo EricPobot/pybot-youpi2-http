@@ -49,7 +49,9 @@ class RestAPIApp(YoupiBottleApp):
         }
 
     def get_pose(self):
-        return self._pythonize_values_dict(self.arm.get_joint_positions())
+        return {
+            YoupiArm.MOTOR_NAMES[k]: v for k, v in self.arm.get_joint_positions()
+        }
 
     def set_pose(self):
         try:
@@ -105,7 +107,9 @@ class RestAPIApp(YoupiBottleApp):
             return HTTPError(400, 'missing angle argument')
 
     def get_motor_positions(self):
-        return self._pythonize_values_dict(self.arm.get_motor_positions())
+        return {
+            YoupiArm.MOTOR_NAMES[k]: v for k, v in self.arm.get_motor_positions()
+        }
 
     def set_motor_positions(self):
         try:
