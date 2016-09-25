@@ -2,10 +2,9 @@
 
 import httplib
 
-from bottle import HTTPError, request, response, error
+from bottle import HTTPError, request, response
 
-from pybot.youpi2.model import YoupiArm
-from pybot.youpi2.app import ArmError
+from pybot.youpi2.model import YoupiArm, OutOfBoundError
 
 from pybot.youpi2.http.base import YoupiBottleApp
 from pybot.youpi2.http.__version__ import version
@@ -50,11 +49,15 @@ class RestAPIApp(YoupiBottleApp):
             k: float(v) for k, v in d.iteritems()
         }
 
-    def _handle_armerror(self, e):
-        reason = e.message.strip().splitlines()[-1]
-        self.log_warning(reason)
-        response.status = httplib.BAD_REQUEST
-        return {"reason": reason}
+    def _checked_move_command(self, meth, *args, **kwargs):
+        try:
+            meth(*args, **kwargs)
+        except OutOfBoundError as e:
+            self.log_warning(e.message)
+            response.status = httplib.BAD_REQUEST
+            return {"reason": e.message}
+        else:
+            response.status = httplib.NO_CONTENT
 
     def get_version(self):
         return {'version': version}
@@ -76,12 +79,7 @@ class RestAPIApp(YoupiBottleApp):
             return self._http_404(str(e).split()[0])
 
         if pose:
-            try:
-                self.arm.goto(pose)
-            except ArmError as e:
-                return self._handle_armerror(e)
-            else:
-                response.status = httplib.NO_CONTENT
+            return self._checked_move_command(self.arm.goto, pose)
         else:
             return HTTPError(httplib.BAD_REQUEST, 'No pose provided')
 
@@ -92,12 +90,7 @@ class RestAPIApp(YoupiBottleApp):
             return self._http_404(str(e).split()[0])
 
         if angles:
-            try:
-                self.arm.move(angles)
-            except ArmError as e:
-                return self._handle_armerror(e)
-            else:
-                response.status = httplib.NO_CONTENT
+            return self._checked_move_command(self.arm.move, angles)
         else:
             return HTTPError(httplib.BAD_REQUEST, 'No angle provided')
 
@@ -128,12 +121,7 @@ class RestAPIApp(YoupiBottleApp):
 
         angle = request.query.angle
         if angle:
-            try:
-                self.arm.goto({joint_id: float(angle)})
-            except ArmError as e:
-                return self._handle_armerror(e)
-            else:
-                response.status = httplib.NO_CONTENT
+            return self._checked_move_command(self.arm.goto, {joint_id: float(angle)})
         else:
             return HTTPError(400, 'Missing argument: angle ')
 
@@ -149,12 +137,7 @@ class RestAPIApp(YoupiBottleApp):
             return self._http_404(str(e).split()[0])
 
         if positions:
-            try:
-                self.arm.motor_goto(positions)
-            except ArmError as e:
-                return self._handle_armerror(e)
-            else:
-                response.status = httplib.NO_CONTENT
+            return self._checked_move_command(self.arm.goto, positions)
         else:
             return HTTPError(httplib.BAD_REQUEST, 'No motor position provided')
 
@@ -185,12 +168,7 @@ class RestAPIApp(YoupiBottleApp):
 
         position = request.query.position
         if position:
-            try:
-                self.arm.motor_goto({joint_id: float(position)})
-            except ArmError as e:
-                return self._handle_armerror(e)
-            else:
-                response.status = httplib.NO_CONTENT
+            return self._checked_move_command(self.arm.motor_goto, {joint_id: float(position)})
         else:
             return HTTPError(httplib.BAD_REQUEST, 'Missing argument: position')
 
