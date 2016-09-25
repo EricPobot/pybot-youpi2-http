@@ -69,13 +69,13 @@ class RestAPIApp(YoupiBottleApp):
 
     def set_pose(self):
         try:
-            pose = {YoupiArm.MOTOR_NAMES.index(j): float(a) for j, a in request.query.iteritems()}
+            pose = {YoupiArm.motor_id(joint_name): float(angle) for joint_name, angle in request.query.iteritems()}
         except ValueError as e:
             return self._http_404(str(e).split()[0])
 
         if pose:
             try:
-                self.arm.goto(pose, True)
+                self.arm.goto(pose)
             except ArmError as e:
                 return self._handle_armerror(e)
             else:
@@ -85,13 +85,13 @@ class RestAPIApp(YoupiBottleApp):
 
     def move(self):
         try:
-            angles = {YoupiArm.MOTOR_NAMES.index(j): float(a) for j, a in request.query.iteritems()}
+            angles = {YoupiArm.motor_id(joint_name): float(angle) for joint_name, angle in request.query.iteritems()}
         except ValueError as e:
             return self._http_404(str(e).split()[0])
 
         if angles:
             try:
-                self.arm.move(angles, True)
+                self.arm.move(angles)
             except ArmError as e:
                 return self._handle_armerror(e)
             else:
@@ -104,7 +104,7 @@ class RestAPIApp(YoupiBottleApp):
             joint_id = int(joint)
         except ValueError:
             try:
-                joint_id = YoupiArm.MOTOR_NAMES.index(joint)
+                joint_id = YoupiArm.motor_id(joint)
             except ValueError:
                 return self._http_404(joint)
 
@@ -120,14 +120,14 @@ class RestAPIApp(YoupiBottleApp):
             joint_id = int(joint)
         except ValueError:
             try:
-                joint_id = YoupiArm.MOTOR_NAMES.index(joint)
+                joint_id = YoupiArm.motor_id(joint)
             except ValueError:
                 return self._http_404(joint)
 
         angle = request.query.angle
         if angle:
             try:
-                self.arm.goto({joint_id: float(angle)}, True)
+                self.arm.goto({joint_id: float(angle)})
             except ArmError as e:
                 return self._handle_armerror(e)
             else:
@@ -142,13 +142,13 @@ class RestAPIApp(YoupiBottleApp):
 
     def set_motor_positions(self):
         try:
-            positions = {YoupiArm.MOTOR_NAMES.index(j): float(a) for j, a in request.query.iteritems()}
+            positions = {YoupiArm.motor_id(joint_name): float(angle) for joint_name, angle in request.query.iteritems()}
         except ValueError as e:
             return self._http_404(str(e).split()[0])
 
         if positions:
             try:
-                self.arm.motor_goto(positions, True)
+                self.arm.motor_goto(positions)
             except ArmError as e:
                 return self._handle_armerror(e)
             else:
@@ -161,7 +161,7 @@ class RestAPIApp(YoupiBottleApp):
             joint_id = int(motor)
         except ValueError:
             try:
-                joint_id = YoupiArm.MOTOR_NAMES.index(motor)
+                joint_id = YoupiArm.motor_id(motor)
             except ValueError:
                 return self._http_404(motor)
 
@@ -177,14 +177,14 @@ class RestAPIApp(YoupiBottleApp):
             joint_id = int(motor)
         except ValueError:
             try:
-                joint_id = YoupiArm.MOTOR_NAMES.index(motor)
+                joint_id = YoupiArm.motor_id(motor)
             except ValueError:
                 return self._http_404(motor)
 
         position = request.query.position
         if position:
             try:
-                self.arm.motor_goto({joint_id: float(position)}, True)
+                self.arm.motor_goto({joint_id: float(position)})
             except ArmError as e:
                 return self._handle_armerror(e)
             else:
@@ -193,7 +193,7 @@ class RestAPIApp(YoupiBottleApp):
             return HTTPError(httplib.BAD_REQUEST, 'Missing argument: position')
 
     def go_home(self):
-        self.arm.go_home([m for m in YoupiArm.MOTORS_ALL if m != YoupiArm.MOTOR_GRIPPER], True)
+        self.arm.go_home([m for m in YoupiArm.MOTORS_ALL if m != YoupiArm.MOTOR_GRIPPER])
         response.status = httplib.NO_CONTENT
 
     def hi_z(self):
@@ -202,13 +202,13 @@ class RestAPIApp(YoupiBottleApp):
 
     def set_gripper_state(self):
         if int(request.query.opened):
-            self.arm.open_gripper(True)
+            self.arm.open_gripper()
         else:
-            self.arm.close_gripper(True)
+            self.arm.close_gripper()
 
         response.status = httplib.NO_CONTENT
 
     def calibrate(self):
         self.arm.seek_origins(YoupiArm.MOTORS_ALL)
-        self.arm.calibrate_gripper(True)
+        self.arm.calibrate_gripper()
         response.status = httplib.NO_CONTENT
