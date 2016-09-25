@@ -19,14 +19,16 @@ class HTTPServerApp(YoupiApplication):
     TITLE = "HTTP Server"
     VERSION = version
 
+    DEFAULT_LISTEN_PORT = 8080
+
     server = None
     server_thread = None
     first_loop = True
 
     def add_custom_arguments(self, parser):
-        parser.add_argument('--port', type=int, default=8080)
+        parser.add_argument('--port', type=int, default=self.DEFAULT_LISTEN_PORT)
 
-    def setup(self, port=8080, **kwargs):
+    def setup(self, port=DEFAULT_LISTEN_PORT, **kwargs):
         # create the Bottle server using a sub-classed version of WSGIServer
         self.server = InterruptibleWSGIServer(port=port)
 
