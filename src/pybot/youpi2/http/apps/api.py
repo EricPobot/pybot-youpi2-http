@@ -14,6 +14,8 @@ __author__ = 'Eric Pascual'
 
 
 class RestAPIApp(YoupiBottleApp):
+    """ REST API for controlling the arm.
+    """
     def __init__(self, *args, **kwargs):
         super(RestAPIApp, self).__init__(*args, **kwargs)
 
