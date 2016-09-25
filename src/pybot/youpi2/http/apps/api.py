@@ -137,7 +137,7 @@ class RestAPIApp(YoupiBottleApp):
             return self._http_404(str(e).split()[0])
 
         if positions:
-            return self._checked_move_command(self.arm.goto, positions)
+            return self._checked_move_command(self.arm.motor_goto, positions)
         else:
             return HTTPError(httplib.BAD_REQUEST, 'No motor position provided')
 
