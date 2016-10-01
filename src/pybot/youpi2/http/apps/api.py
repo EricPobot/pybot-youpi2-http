@@ -33,6 +33,7 @@ class RestAPIApp(YoupiBottleApp):
         self.route('/home', 'PUT', callback=self.go_home)
         self.route('/hi_z', 'PUT', callback=self.hi_z)
         self.route('/calibrate', 'PUT', callback=self.calibrate)
+        self.route('/ik', 'PUT', callback=self.ik)
 
     def _http_error(self, status, msg):
         self.log_error(msg)
@@ -192,3 +193,6 @@ class RestAPIApp(YoupiBottleApp):
         self.arm.seek_origins(YoupiArm.MOTORS_ALL)
         self.arm.calibrate_gripper()
         response.status = httplib.NO_CONTENT
+
+    def ik(self, x, y, z, pitch=90):
+        return self._checked_move_command(self.arm.move_gripper_at, x, y, z, pitch)
