@@ -29,7 +29,7 @@ class RestAPIApp(YoupiBottleApp):
         self.route('/move', 'PUT', callback=self.move)
         self.route('/joint/<joint>', 'GET', callback=self.get_joint_angle)
         self.route('/joint/<joint>', 'PUT', callback=self.set_joint_angle)
-        self.route('/gripper/<state>', 'PUT', callback=self.gripper_command)
+        self.route('/gripper/<command>', 'PUT', callback=self.gripper_command)
         self.route('/gripper', 'GET', callback=self.get_gripper_state)
         self.route('/motors', 'GET', callback=self.get_motor_positions)
         self.route('/motors', 'PUT', callback=self.set_motor_positions)
