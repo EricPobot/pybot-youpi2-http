@@ -2,15 +2,15 @@
 
 from bottle import Bottle
 
-from pybot.core.log import LogMixin
+from pybot.core.log import LogMixin, INFO
 
 __author__ = 'Eric Pascual'
 
 
 class YoupiBottleApp(Bottle, LogMixin):
-    def __init__(self, name=None, arm=None, panel=None):
+    def __init__(self, name=None, arm=None, panel=None, log_level=INFO):
         Bottle.__init__(self)
-        LogMixin.__init__(self, name=name)
+        LogMixin.__init__(self, name=name, level=log_level)
 
         self.arm = arm
         self.panel = panel
