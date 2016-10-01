@@ -29,7 +29,7 @@ class RestAPIApp(YoupiBottleApp):
         self.route('/move', 'PUT', callback=self.move)
         self.route('/joint/<joint>', 'GET', callback=self.get_joint_angle)
         self.route('/joint/<joint>', 'PUT', callback=self.set_joint_angle)
-        self.route('/gripper/<opened>', 'PUT', callback=self.set_gripper_state)
+        self.route('/gripper/<state>', 'PUT', callback=self.gripper_command)
         self.route('/gripper', 'GET', callback=self.get_gripper_state)
         self.route('/motors', 'GET', callback=self.get_motor_positions)
         self.route('/motors', 'PUT', callback=self.set_motor_positions)
@@ -189,13 +189,16 @@ class RestAPIApp(YoupiBottleApp):
         self.arm.soft_hi_Z()
         response.status = httplib.NO_CONTENT
 
-    def set_gripper_state(self, opened):
-        if int(opened):
-            self.arm.open_gripper()
-        else:
-            self.arm.close_gripper()
-
-        response.status = httplib.NO_CONTENT
+    def gripper_command(self, command):
+        command = command.lower()
+        try:
+            {
+                'open': self.arm.open_gripper,
+                'close': self.arm.close_gripper
+            }[command]()
+            response.status = httplib.NO_CONTENT
+        except KeyError:
+            raise HTTPError(httplib.BAD_REQUEST, 'Invalid command: %s' % command)
 
     def get_gripper_state(self):
         return {'closed': int(self.arm.gripper_is_closed())}
