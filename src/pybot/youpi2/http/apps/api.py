@@ -3,6 +3,7 @@
 import httplib
 
 from bottle import HTTPError, request, response
+import bottle
 
 from pybot.youpi2.model import YoupiArm, OutOfBoundError
 
@@ -10,6 +11,9 @@ from pybot.youpi2.http.base import YoupiBottleApp
 from pybot.youpi2.http.__version__ import version
 
 __author__ = 'Eric Pascual'
+
+
+bottle.DEBUG = True
 
 
 class RestAPIApp(YoupiBottleApp):
@@ -25,7 +29,8 @@ class RestAPIApp(YoupiBottleApp):
         self.route('/move', 'PUT', callback=self.move)
         self.route('/joint/<joint>', 'GET', callback=self.get_joint_angle)
         self.route('/joint/<joint>', 'PUT', callback=self.set_joint_angle)
-        self.route('/gripper', 'PUT', callback=self.set_gripper_state)
+        self.route('/gripper/<opened>', 'PUT', callback=self.set_gripper_state)
+        self.route('/gripper', 'GET', callback=self.get_gripper_state)
         self.route('/motors', 'GET', callback=self.get_motor_positions)
         self.route('/motors', 'PUT', callback=self.set_motor_positions)
         self.route('/motor/<motor>', 'GET', callback=self.get_motor_position)
@@ -57,6 +62,9 @@ class RestAPIApp(YoupiBottleApp):
             self.log_warning(e.message)
             response.status = httplib.BAD_REQUEST
             return {"reason": e.message}
+        except Exception as e:
+            self.log_exception(e)
+            raise
         else:
             response.status = httplib.NO_CONTENT
 
@@ -181,18 +189,35 @@ class RestAPIApp(YoupiBottleApp):
         self.arm.soft_hi_Z()
         response.status = httplib.NO_CONTENT
 
-    def set_gripper_state(self):
-        if int(request.query.opened):
+    def set_gripper_state(self, opened):
+        if int(opened):
             self.arm.open_gripper()
         else:
             self.arm.close_gripper()
 
         response.status = httplib.NO_CONTENT
 
+    def get_gripper_state(self):
+        return {'closed': int(self.arm.gripper_is_closed())}
+
     def calibrate(self):
         self.arm.seek_origins(YoupiArm.MOTORS_ALL)
         self.arm.calibrate_gripper()
         response.status = httplib.NO_CONTENT
 
-    def ik(self, x, y, z, pitch=90):
-        return self._checked_move_command(self.arm.move_gripper_at, x, y, z, pitch)
+    def ik(self):
+        def get_float_arg(name, dflt=None):
+            try:
+                if dflt is None:
+                    return float(request.query[name])
+                else:
+                    return float(request.query.get(name, dflt))
+            except KeyError:
+                raise HTTPError(httplib.BAD_REQUEST, 'Missing argument: %s' % name)
+            except ValueError:
+                raise HTTPError(httplib.BAD_REQUEST, 'Bad value for argument: %s' % name)
+
+        return self._checked_move_command(
+            self.arm.move_gripper_at,
+            get_float_arg('x'), get_float_arg('y'), get_float_arg('z'), get_float_arg('pitch', 90)
+        )
