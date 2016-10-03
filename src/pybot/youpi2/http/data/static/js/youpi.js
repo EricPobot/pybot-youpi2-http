@@ -29,6 +29,27 @@ $("#form_motion").submit(function (event) {
     event.preventDefault();
 });
 
+$("#form_ik").submit(function (event) {
+    var params = {
+        x : parseInt($("#x").val()),
+        y : parseInt($("#y").val()),
+        z : parseInt($("#z").val()),
+        pitch : parseInt($("#pitch").val()),
+    }
+
+    $.ajax({
+        url: url_prefix + $(this).attr("action") + $.param(params),
+        method: $(this).attr("method"),
+        beforeSend: function(){
+            pleaseWait.modal('show');
+        }
+    }).always(function(){
+        pleaseWait.modal('hide');
+    });
+
+    event.preventDefault();
+});
+
 $("#form_gripper").submit(function (event) {
     var opened = $("#gripper").val() == "ouverte";
 
