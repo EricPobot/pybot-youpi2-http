@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from bottle import Bottle
+from pkg_resources import resource_filename
+
+from bottle import Bottle, TEMPLATE_PATH
 
 from pybot.core.log import LogMixin, INFO
 
 __author__ = 'Eric Pascual'
+
+my_package = '.'.join(__name__.split('.')[:-1])
+
+TEMPLATE_PATH.insert(0, resource_filename(my_package, "data/templates/"))
+STATIC_PATH = resource_filename(my_package, "data/static/")
 
 
 class YoupiBottleApp(Bottle, LogMixin):

@@ -7,7 +7,7 @@ import threading
 from pybot.youpi2.app import YoupiApplication
 
 from __version__ import version
-from base import YoupiBottleApp
+from base import YoupiBottleApp, TEMPLATE_PATH, STATIC_PATH
 from apps.api import RestAPIApp
 from apps.ui import UIApp
 
@@ -35,7 +35,8 @@ class HTTPServerApp(YoupiApplication):
         # start it by executing the run() method in a thread
         def bottle_run():
             self.log_info("Bottle v%s server starting up (using %s)...", bottle.__version__, self.server)
-            self.log_info("Listening on http://%s:%d/" % (self.server.host, self.server.port))
+            self.log_info('template path: %s', TEMPLATE_PATH)
+            self.log_info('static path: %s', STATIC_PATH)
 
             app = YoupiBottleApp(arm=self.arm, panel=self.pnl, name='app-root')
             ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui')
@@ -47,6 +48,8 @@ class HTTPServerApp(YoupiApplication):
             app.merge(ui_app.routes)
             app.mount('/api/v1/', api_app)
 
+            self.log_info("Listening on http://%s:%d/" % (self.server.host, self.server.port))
+
             bottle.run(app=app, server=self.server)
 
             self.log_info('Bottle server terminated')
@@ -54,6 +57,10 @@ class HTTPServerApp(YoupiApplication):
         self.server_thread = threading.Thread(target=bottle_run)
 
     def before_request(self):
+        if not bottle.request.path.startswith('/api'):
+            # avoid slowing down servicing of UI
+            return
+
         self.pnl.write_at(bottle.request.remote_addr, line=2)
         method = bottle.request.method
         self.pnl.write_at(' ' + method, line=2, col=self.pnl.width - len(method))
@@ -66,10 +73,16 @@ class HTTPServerApp(YoupiApplication):
         self.pnl.center_text_at('Processing...', line=4)
 
     def after_request(self):
+        if not bottle.request.path.startswith('/api'):
+            return
+
         resp = bottle.response
         w = self.pnl.width
         part1 = ("status=%s" % resp.status_code).ljust(w)
-        part2 = "size=%d" % resp.content_length
+        try:
+            part2 = "size=%d" % resp.content_length
+        except:
+            part2 = ""
         self.pnl.write_at(part1[:w - len(part2)] + part2, line=4)
 
     def loop(self):

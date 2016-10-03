@@ -1,0 +1,12 @@
+body {
+    /*padding-top: 70px;*/
+}
+
+footer {
+    margin-top: 2em;
+}
+
+#toc {
+    border: 1px solid #808080;
+    border-radius: 5px;
+}
