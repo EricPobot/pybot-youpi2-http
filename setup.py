@@ -9,17 +9,27 @@ setup(
     namespace_packages=['pybot', 'pybot.youpi2'],
     packages=find_packages("src"),
     package_dir={'': 'src'},
-    # package_data={'pybot.http.restapi': ['data/*']},
+    package_data={'pybot.youpi2.http': [
+        'data/static/css/bootstrap-slate.min.css',
+        'data/static/css/bootstrap-toc.min.css',
+        'data/static/css/youpi.css',
+        'data/static/fonts/*.ttf',
+        'data/static/js/*.min.js',
+        'data/static/js/youpi*.js',
+        'data/static/img/*',
+        'data/templates/*.tpl'
+    ]},
     url='',
     license='',
     author='Eric Pascual',
     author_email='eric@pobot.org',
     install_requires=['pybot-youpi2-app', 'bottle>=0.12.9'],
     download_url='https://github.com/Pobot/PyBot',
-    description='Youpi2 REST API server',
+    description='Youpi2 embedded HTTP server',
     entry_points={
         'console_scripts': [
             'youpi2-http-server = pybot.youpi2.http.webapp:main',
+            'youpi2-http-doc = pybot.youpi2.http.docsrvr:main'
         ]
     }
 )
