@@ -4,3 +4,13 @@ dist
 *.egg-info
 __version__.*
 .fab_tasks~
+bootstrap.css
+bootstrap.min.css
+bootstrap-theme.*
+*.map
+*.eot
+*.svg
+*.woff
+*.woff2
+bootstrap.js
+npm.js
