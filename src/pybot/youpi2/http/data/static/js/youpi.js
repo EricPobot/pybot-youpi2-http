@@ -2,8 +2,17 @@
  * Created by eric on 02/10/16.
  */
 
-var pleaseWait = $("#pleaseWaitDialog");
+var pleaseWait = $("#please_wait_dlg");
 pleaseWait.modal();
+
+var errorModal = $("#error_dlg")
+var errorMsg = $("#error_msg");
+errorModal.modal();
+
+function error_message(msg) {
+    errorMsg.text(msg);
+    errorModal.modal('show');
+}
 
 var url_prefix = "http://" + document.location.hostname + ":8080";
 
@@ -34,15 +43,36 @@ $("#form_ik").submit(function (event) {
         x : parseInt($("#x").val()),
         y : parseInt($("#y").val()),
         z : parseInt($("#z").val()),
-        pitch : parseInt($("#pitch").val()),
+        pitch : 90,
     }
 
     $.ajax({
         url: url_prefix + $(this).attr("action") + $.param(params),
         method: $(this).attr("method"),
-        beforeSend: function(){
+        beforeSend: function () {
             pleaseWait.modal('show');
         }
+    }).fail(function(jqXHR, textStatus, errorThrown){
+        var msg = jqXHR.responseText;
+        if (msg.startsWith('mechanical limit')) {
+            var joint = msg.split(/[()]/)[1];
+            switch (joint) {
+                case "shoulder":
+                    joint = "épaule";
+                    break;
+                case "elbow":
+                    joint = "coude";
+                    break;
+                case "wrist":
+                    joint = "poignet";
+                    break;
+            }
+            msg = "Mouvement impossible : limite mécanique atteinte (" + joint + ").";
+        } else if (msg.startsWith('out of reach')) {
+            msg = "Position hors d'atteinte du bras."
+        }
+        error_message(msg);
+
     }).always(function(){
         pleaseWait.modal('hide');
     });

@@ -2,7 +2,7 @@
 
 import httplib
 
-from bottle import HTTPError, request, response
+from bottle import HTTPError, HTTPResponse, request, response
 import bottle
 
 from pybot.youpi2.model import YoupiArm, OutOfBoundError
@@ -60,8 +60,7 @@ class RestAPIApp(YoupiBottleApp):
             meth(*args, **kwargs)
         except OutOfBoundError as e:
             self.log_warning(e.message)
-            response.status = httplib.BAD_REQUEST
-            return {"reason": e.message}
+            raise HTTPResponse(status=httplib.BAD_REQUEST, body=e.message)
         except Exception as e:
             self.log_exception(e)
             raise

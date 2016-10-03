@@ -5,12 +5,12 @@
         </footer>
     </div> <!-- /container -->
 
-    <div class="modal fade" id="pleaseWaitDialog" tabindex="-1" role="dialog"
+    <div class="modal fade" id="please_wait_dlg" tabindex="-1" role="dialog"
          data-backdrop="static" data-keyboard="false" data-show="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1>Opération en cours...</h1>
+                    <h2>Opération en cours...</h2>
                 </div>
                 <div class="modal-body">
                     <div class="progress">
@@ -19,6 +19,26 @@
                              style="width: 100%;">
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="error_dlg" tabindex="-1" role="dialog"
+         data-backdrop="static" data-show="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h2>Erreur</h2>
+                </div>
+                <div class="modal-body">
+                    <p id="error_msg">...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
