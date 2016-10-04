@@ -32,7 +32,8 @@ setup(
     entry_points={
         'console_scripts': [
             'youpi2-http-server = pybot.youpi2.http.webapp:main',
-            'youpi2-http-doc = pybot.youpi2.http.docsrvr:main'
+            'youpi2-http-doc = pybot.youpi2.http.docsrvr:main',
+            # systemd related
             "youpi2-http-doc-systemd-install = pybot.youpi2.http.setup.systemd:install_service [systemd]",
             "youpi2-http-doc-systemd-remove = pybot.youpi2.http.setup.systemd:remove_service [systemd]",
         ]
