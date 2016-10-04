@@ -24,12 +24,17 @@ setup(
     author='Eric Pascual',
     author_email='eric@pobot.org',
     install_requires=['pybot-youpi2-app', 'bottle>=0.12.9'],
+    extras_require={
+        'systemd': ['pybot-systemd']
+    },
     download_url='https://github.com/Pobot/PyBot',
     description='Youpi2 embedded HTTP server',
     entry_points={
         'console_scripts': [
             'youpi2-http-server = pybot.youpi2.http.webapp:main',
             'youpi2-http-doc = pybot.youpi2.http.docsrvr:main'
+            "youpi2-http-doc-systemd-install = pybot.youpi2.http.setup.systemd:install_service [systemd]",
+            "youpi2-http-doc-systemd-remove = pybot.youpi2.http.setup.systemd:remove_service [systemd]",
         ]
     }
 )

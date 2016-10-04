@@ -1,0 +1,12 @@
+[Unit]
+Description=Youpi2 online documentation
+After=network.target
+PartOf=youpi2.target
+
+[Service]
+Type=simple
+Environment=PYTHONPATH=/home/pi/.local/lib/python2.7/site-packages/
+ExecStart=/home/pi/.local/bin/youpi2-http-doc
+
+[Install]
+WantedBy=youpi2.target
