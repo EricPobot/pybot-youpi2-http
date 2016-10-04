@@ -15,4 +15,4 @@
 
 %include("form_motion.tpl", action="/api/v1/motors?", legend="Position des moteurs")
 %include("form_gripper.tpl")
-%include("epilog.tpl", version=version)
+%include("epilog.tpl", version=version, ui_app=True)

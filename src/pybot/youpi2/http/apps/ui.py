@@ -17,6 +17,7 @@ class UIApp(YoupiBottleApp):
         self.route('/', callback=self.home)
         self.route('/index', callback=self.home)
         self.route('/home', callback=self.home)
+        self.route('/about', callback=self.about)
         self.route('/control/motor', callback=self.ctrl_motor)
         self.route('/control/joint', callback=self.ctrl_joint)
         self.route('/control/ik', callback=self.ctrl_ok)
@@ -38,6 +39,9 @@ class UIApp(YoupiBottleApp):
 
     def home(self):
         return self._render_template('ui_home')
+
+    def about(self):
+        return self._render_template('ui_about')
 
     def ctrl_motor(self):
         return self._render_template('ui_ctrl_motor')

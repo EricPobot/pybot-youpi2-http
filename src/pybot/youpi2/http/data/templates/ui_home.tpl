@@ -29,4 +29,4 @@
     </div>
 </div>
 
-%include("epilog.tpl", version=version)
+%include("epilog.tpl", version=version, ui_app=True)

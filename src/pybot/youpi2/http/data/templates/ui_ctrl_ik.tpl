@@ -62,4 +62,4 @@
 
 
 %include("form_gripper.tpl")
-%include("epilog.tpl", version=version)
+%include("epilog.tpl", version=version, ui_app=True)

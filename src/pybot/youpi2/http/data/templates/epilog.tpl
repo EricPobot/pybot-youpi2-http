@@ -5,6 +5,8 @@
         </footer>
     </div> <!-- /container -->
 
+    % setdefault('ui_app', False)
+    % if ui_app:
     <div class="modal fade" id="please_wait_dlg" tabindex="-1" role="dialog"
          data-backdrop="static" data-keyboard="false" data-show="false">
         <div class="modal-dialog" role="document">
@@ -43,6 +45,7 @@
             </div>
         </div>
     </div>
+    % end
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="/static/js/jquery-3.1.1.min.js"></script>
