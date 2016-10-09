@@ -3,6 +3,7 @@
 import bottle
 import time
 import threading
+from Queue import Queue, Empty
 
 from pybot.youpi2.app import YoupiApplication
 
@@ -25,10 +26,16 @@ class HTTPServerApp(YoupiApplication):
     server_thread = None
     first_loop = True
 
+    display_queue = None
+    display_queue_worker = None
+
     def add_custom_arguments(self, parser):
         parser.add_argument('--port', type=int, default=self.DEFAULT_LISTEN_PORT)
 
     def setup(self, port=DEFAULT_LISTEN_PORT, **kwargs):
+        self.display_queue = Queue()
+        self.display_queue_worker = threading.Thread(target=self.process_display_requests)
+
         # create the Bottle server using a sub-classed version of WSGIServer
         self.server = InterruptibleWSGIServer(port=port)
 
@@ -57,25 +64,19 @@ class HTTPServerApp(YoupiApplication):
         self.server_thread = threading.Thread(target=bottle_run)
 
     def before_request(self):
-        if not bottle.request.path.startswith('/api'):
-            # avoid slowing down servicing of UI
-            return
+        self.post_display_request(self.pnl.write_at, bottle.request.remote_addr, line=2)
 
-        self.pnl.write_at(bottle.request.remote_addr, line=2)
         method = bottle.request.method
-        self.pnl.write_at(' ' + method, line=2, col=self.pnl.width - len(method))
+        self.post_display_request(self.pnl.write_at, ' ' + method, line=2, col=self.pnl.width - len(method))
         qry = bottle.request.query_string
         if qry:
             s = bottle.request.path + '?' + qry
         else:
             s = bottle.request.path
-        self.pnl.write_at(s[:20].ljust(20), line=3)
-        self.pnl.center_text_at('Processing...', line=4)
+        self.post_display_request(self.pnl.write_at, s[:20].ljust(20), line=3)
+        self.post_display_request(self.pnl.center_text_at, 'Processing...', line=4)
 
     def after_request(self):
-        if not bottle.request.path.startswith('/api'):
-            return
-
         resp = bottle.response
         w = self.pnl.width
         part1 = ("status=%s" % resp.status_code).ljust(w)
@@ -83,13 +84,39 @@ class HTTPServerApp(YoupiApplication):
             part2 = "size=%d" % resp.content_length
         except:
             part2 = ""
-        self.pnl.write_at(part1[:w - len(part2)] + part2, line=4)
+        self.post_display_request(self.pnl.write_at, part1[:w - len(part2)] + part2, line=4)
+
+    def process_display_requests(self):
+        self.log_info('display requests worker started')
+        while not self.terminated:
+            try:
+                req = self.display_queue.get(True, 0.01)
+                self.log_debug('processing display request: %s', req)
+                try:
+                    req.execute()
+                except Exception as e:
+                    self.log_error('error while processing: %s', req)
+                    self.log_error(e)
+                else:
+                    self.log_debug('.. done')
+
+            except Empty:
+                pass
+
+        self.log_info('display requests worker terminated')
+
+    def post_display_request(self, meth, *args, **kwargs):
+        req = DisplayRequest(meth, args, kwargs)
+        self.display_queue.put(req)
+        self.log_debug('display request added to queue: %s', req)
 
     def loop(self):
         if self.first_loop:
             self.server_thread.start()
             self.first_loop = False
             self.pnl.center_text_at('Ready', 3)
+
+            self.display_queue_worker.start()
 
         else:
             # nothing to do here since the server is running in a thread.
@@ -101,6 +128,9 @@ class HTTPServerApp(YoupiApplication):
                 return True
 
     def teardown(self, exit_code):
+        if self.display_queue_worker:
+            self.display_queue_worker.join(1)
+
         self.pnl.center_text_at('', 2)
         self.pnl.center_text_at('Terminating...', 3)
         self.pnl.center_text_at('', 3)
@@ -130,23 +160,9 @@ class InterruptibleWSGIServer(bottle.WSGIRefServer):
         from wsgiref.simple_server import make_server
         import socket
 
-        panel = app.panel
-
         class FixedHandler(WSGIRequestHandler):
             def address_string(self):   # Prevent reverse DNS lookups
                 return self.client_address[0]
-
-            # def log_request(self, code='-', size='-'):
-            #     # method, url, protocol = self.requestline.split()
-            #     #
-            #     # panel.write_at(self.client_address[0], line=2)
-            #     # panel.write_at(' ' + method, line=2, col=panel.width - len(method))
-            #     #
-            #     # panel.write_at(url[:20].ljust(20), line=3)
-            #
-            #     panel.center_text_at("status=%s size=%s" % (code, size), line=4)
-            #
-            #     return WSGIRequestHandler.log_request(self, code=code, size=size)
 
             def log_message(self, msg_format, *args):
                 app.log_info("[%s] %s", self.client_address[0], msg_format % args)
@@ -167,6 +183,23 @@ class InterruptibleWSGIServer(bottle.WSGIRefServer):
     def shutdown(self):
         if self.srv:
             self.srv.shutdown()
+
+
+class DisplayRequest(object):
+    def __init__(self, pnl_meth, args, kwargs):
+        self.pnl_meth = pnl_meth
+        self.meth_args = args
+        self.meth_kwargs = kwargs
+
+    def __str__(self):
+        return '%s(%s, %s)' % (
+            self.pnl_meth.__name__,
+            ', '.join((repr(a) for a in self.meth_args)),
+            ', '.join(("%s=%s" % (k, repr(v)) for k, v in self.meth_kwargs.iteritems()))
+        )
+
+    def execute(self):
+        self.pnl_meth(*self.meth_args, **self.meth_kwargs)
 
 
 def main():
