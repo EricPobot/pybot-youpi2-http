@@ -15,7 +15,9 @@
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <button type="submit" class="btn btn-success btn-block">Envoyer</button>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block">Envoyer</button>
+                    </div>
                 </div>
             </fieldset>
         </div>

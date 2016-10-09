@@ -1,4 +1,4 @@
-%include("ui_prolog.tpl", title="Youpi 2")
+% include("ui_prolog.tpl", title="Youpi 2")
 
 <div class="page-header"><h1>Contrôle direct des articulations</h1></div>
 
@@ -12,6 +12,15 @@
     </p>
 </div>
 
-%include("form_motion.tpl", action="/api/v1/pose?", legend="Position des articulations")
-%include("form_gripper.tpl")
-%include("epilog.tpl", version=version, ui_app=True)
+<%
+    include("form_motion.tpl", action="/api/v1/pose?", legend="Position des articulations",
+        predefined=[
+            ('Victoire', [0,0,0,0]),
+            ('Cobra', [0,-45,90,45]),
+            ('Révérence', [0,65,70,90]),
+            ('Bonjour', [0,45,45,0]),
+        ]
+    )
+%>
+% include("form_gripper.tpl")
+% include("epilog.tpl", version=version, ui_app=True)

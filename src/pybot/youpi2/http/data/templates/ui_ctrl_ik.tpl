@@ -1,4 +1,13 @@
-%include("ui_prolog.tpl", title="Youpi 2")
+% include("ui_prolog.tpl", title="Youpi 2")
+
+<%
+    predefined=[
+        ('Au milieu', [150, 0, 100]),
+        ('A droite', [150, 100, 100]),
+        ('A gauche', [150, -100, 100]),
+        ('Devant', [200, 0, 200]),
+    ]
+%>
 
 <div class="page-header"><h1>Contrôle par cinématique inverse</h1></div>
 
@@ -46,15 +55,28 @@
                         <label for="z" class="col-sm-6 control-label">Z (en mm)</label>
                         <div class="col-sm-4">
                             <input type="number" min="10" max="300"
-                                   value="50"
+                                   value="100"
                                    class="form-control" id="z"
                                    placeholder="Entrez une coordonnée">
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <button type="submit" class="btn btn-success btn-block">Envoyer</button>
-                    <button type="reset" class="btn btn-default btn-block">Position par défaut</button>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block">Envoyer</button>
+                        <button type="reset" class="btn btn-default btn-block">Position par défaut</button>
+                    </div>
+                    % if predefined:
+                    <div class="form-group" id="predef-block">
+                        <label for="xyz-predef-select">Positions pré-définies</label>
+                        <select class="form-control" id="xyz-predef-select">
+                            <option>-- Choisir une position --</option>
+                            % for label, value in sorted(predefined):
+                            <option value="{{ value }}">{{ label }}</option>
+                            % end
+                        </select>
+                    </div>
+                    % end
                 </div>
             </fieldset>
         </div>
@@ -62,5 +84,5 @@
 </form>
 
 
-%include("form_gripper.tpl")
-%include("epilog.tpl", version=version, ui_app=True)
+% include("form_gripper.tpl")
+% include("epilog.tpl", version=version, ui_app=True)

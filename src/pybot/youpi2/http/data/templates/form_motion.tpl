@@ -51,8 +51,21 @@
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <button type="submit" class="btn btn-success btn-block">Envoyer</button>
-                    <button type="reset" class="btn btn-default btn-block">Remise à zéro</button>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block">Envoyer</button>
+                        <button type="reset" class="btn btn-default btn-block">Remise à zéro</button>
+                    </div>
+                    % if predefined:
+                    <div class="form-group" id="predef-block">
+                        <label for="angles-predef-select">Positions pré-définies</label>
+                        <select class="form-control" id="angles-predef-select">
+                            <option>-- Choisir une position --</option>
+                            % for label, value in sorted(predefined):
+                            <option value="{{ value }}">{{ label }}</option>
+                            % end
+                        </select>
+                    </div>
+                    % end
                 </div>
             </fieldset>
         </div>

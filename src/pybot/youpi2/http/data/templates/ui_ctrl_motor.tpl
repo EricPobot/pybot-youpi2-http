@@ -1,4 +1,4 @@
-%include("ui_prolog.tpl", title="Youpi 2")
+% include("ui_prolog.tpl", title="Youpi 2")
 
 <div class="page-header"><h1>Contrôle direct des moteurs</h1></div>
 
@@ -13,6 +13,6 @@
         et donc non influencé par la position des moteurs en amont.</p>
 </div>
 
-%include("form_motion.tpl", action="/api/v1/motors?", legend="Position des moteurs")
-%include("form_gripper.tpl")
-%include("epilog.tpl", version=version, ui_app=True)
+% include("form_motion.tpl", action="/api/v1/motors?", legend="Position des moteurs", predefined=[])
+% include("form_gripper.tpl")
+% include("epilog.tpl", version=version, ui_app=True)

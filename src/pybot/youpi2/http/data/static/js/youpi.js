@@ -5,7 +5,7 @@
 var pleaseWait = $("#please_wait_dlg");
 pleaseWait.modal();
 
-var errorModal = $("#error_dlg")
+var errorModal = $("#error_dlg");
 var errorMsg = $("#error_msg");
 errorModal.modal();
 
@@ -34,7 +34,7 @@ form_motion.submit(function (event) {
         elbow : parseInt($("#elbow").val()),
         wrist : parseInt($("#wrist").val()),
         hand : parseInt($("#hand").val())
-    }
+    };
 
     $.ajax({
         url: url_prefix + motion_action + $.param(params),
@@ -47,6 +47,27 @@ form_motion.submit(function (event) {
     });
 
     event.preventDefault();
+});
+
+$("#angles-predef-select").change(function(){
+    var angles = eval($(this).val());
+    if (angles == "")
+        return;
+
+    $("#base").val(angles[0]);
+    $("#shoulder").val(angles[1]);
+    $("#elbow").val(angles[2]);
+    $("#wrist").val(angles[3]);
+});
+
+$("#xyz-predef-select").change(function(){
+    var xyz = eval($(this).val());
+    if (xyz == "")
+        return;
+
+    $("#x").val(xyz[0]);
+    $("#y").val(xyz[1]);
+    $("#z").val(xyz[2]);
 });
 
 var form_ik = $("#form_ik");
@@ -64,8 +85,8 @@ form_ik.submit(function (event) {
         x : parseInt($("#x").val()),
         y : parseInt($("#y").val()),
         z : parseInt($("#z").val()),
-        pitch : 90,
-    }
+        pitch : 90
+    };
 
     $.ajax({
         url: url_prefix + ik_action + $.param(params),
