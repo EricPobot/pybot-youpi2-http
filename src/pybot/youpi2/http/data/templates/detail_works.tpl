@@ -82,7 +82,47 @@ tableaux de bord de canots automobiles Riva ;)</p>
 
 <h2>Le système de supervision</h2>
 
-<p>...</p>
+<div class="row">
+    <div class="col-xs-6 col-md-8">
+        <p>Il gère l'ensemble du fonctionnement de Youpi et démarre automatiquement à la mise sous tension.
+        Il se charge également du dialogue avec l'utilisateur via le panneau de commande, et déclenche
+        les oéprations correspondantes.</p>
+
+        <p>Il est composé d'un ensemble de logiciels qui s'exécutent sur une carte Raspberry Pi, véritable
+        ordinateur miniaturisé de la taille d'une carte de crédit. Cette carte est intégrée dans le boîtier
+        socle de Youpi.</p>
+    </div>
+    <div class="col-xs-6 col-md-4">
+        <a href="/static/img/raspi.jpg" class="thumbnail">
+            <img src="/static/img/raspi.jpg" alt="Raspberry Pi" title="Raspberry Pi embarquée">
+        </a>
+    </div>
+</div>
+
+<p>Ses fonctions actuelles sont:</p>
+<ul>
+    <li>fonctions système</li>
+    <ul>
+        <li>calibrage du bras pour réinitialisation des positions de référence de chaque articulation
+        et de la pince,</li>
+        <li>gestion de l'activation des moteurs,</li>
+        <li>arrêt du système,</li>
+    </ul>
+    <li>démonstrations</li>
+    <ul>
+        <li>mouvements automatiques,</li>
+        <li>résolution du problème des Tours de Hanoï,</li>
+        <li>pilotage du bras depuis un Minitel,</li>
+        <li>pilotage du bras depuis une interface Web,</li>
+        <li>pilotage du bras en Web service via une API REST,</li>
+    </ul>
+    <li>serveur HTTP embarqué permettant de consulter la documentation avec le navigateur Web
+        d'une machine connectée sur le même réseau.</li>
+</ul>
+
+<p>Construit à la manière d'un système d'exploitation, il peut être étendu facilement en ajoutant
+tout simplement de nouvelles applications. La plupart des fonctions énumérées ci-dessus est d'ailleurs
+développée de cette manière.</p>
 
 %include("jump_to_top")
 

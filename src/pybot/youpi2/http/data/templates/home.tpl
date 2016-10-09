@@ -30,14 +30,13 @@
         <p><a class="btn btn-default" href="/detail/works" role="button">Détails &raquo;</a></p>
     </div>
     <div class="col-md-4">
-        <h2>Technique</h2>
-        <p>Youpi dispose maintenant d'un centre de contrôle intégré et ne dépend
-            plus d'un ordinateur connecté pour fonctionner.</p>
-        <p>Il est cependant capable de dialoguer avec l'extérieur grâce à un
-            serveur HTTP interne <i>(que vous êtes en train d'utiliser)</i>.</p>
-        <p>L'électronique d'origine assurant le pilotage des moteurs pas
-            à pas a été remplacée par des composants intelligents, prenant en
-            charge directement le contrôle de bas niveau. </p>
+        <h2>Détails technique</h2>
+        <p>Youpi utilise une approche modulaire aussi bien au niveau hardware que software, dans le
+            but d'être le plus évolutif possible et d'encourager les contributions.</p>
+        <p>Les bus I2C et SPI sont mis à profit pour faire communiquer les différents sous-ensembles
+            avec la Raspberry Pi de supervision.</p>
+        <p>Le bus système D-Bus et le système de fichiers virtuels sont utilisés pour faire communiquer
+            les différents composants logiciels.</p>
         <p><a class="btn btn-default" href="/detail/tech" role="button">Détails &raquo;</a></p>
     </div>
 </div>
