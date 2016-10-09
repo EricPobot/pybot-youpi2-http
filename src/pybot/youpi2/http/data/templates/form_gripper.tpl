@@ -1,4 +1,4 @@
-<form id="form_gripper" class="form-horizontal" action="/api/v1/gripper/" method="PUT">
+<form id="form_gripper" class="form-horizontal" action="/api/v1/gripper" method="PUT">
     <div class="row">
         <div class="col-sm-8 col-sm-offset-2">
             <fieldset>

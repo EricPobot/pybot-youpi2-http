@@ -16,7 +16,18 @@ function error_message(msg) {
 
 var url_prefix = "http://" + document.location.hostname + ":8080";
 
-$("#form_motion").submit(function (event) {
+var form_motion = $("#form_motion");
+var motion_action = form_motion.attr('action');
+
+$.getJSON(url_prefix + motion_action, function(data){
+    $("#base").val(Math.round(data.base));
+    $("#shoulder").val(Math.round(data.shoulder));
+    $("#elbow").val(Math.round(data.elbow));
+    $("#wrist").val(Math.round(data.wrist));
+    $("#hand").val(Math.round(data.hand));
+});
+
+form_motion.submit(function (event) {
     var params = {
         base : parseInt($("#base").val()),
         shoulder : parseInt($("#shoulder").val()),
@@ -26,7 +37,7 @@ $("#form_motion").submit(function (event) {
     }
 
     $.ajax({
-        url: url_prefix + $(this).attr("action") + $.param(params),
+        url: url_prefix + motion_action + $.param(params),
         method: $(this).attr("method"),
         beforeSend: function(){
             pleaseWait.modal('show');
@@ -38,7 +49,17 @@ $("#form_motion").submit(function (event) {
     event.preventDefault();
 });
 
-$("#form_ik").submit(function (event) {
+var form_ik = $("#form_ik");
+var ik_action = form_ik.attr('action');
+var xyz_action = $("#action-xyz").val();
+
+$.getJSON(url_prefix + xyz_action, function(data){
+    $("#x").val(Math.round(data.x));
+    $("#y").val(Math.round(data.y));
+    $("#z").val(Math.round(data.z));
+});
+
+form_ik.submit(function (event) {
     var params = {
         x : parseInt($("#x").val()),
         y : parseInt($("#y").val()),
@@ -47,7 +68,7 @@ $("#form_ik").submit(function (event) {
     }
 
     $.ajax({
-        url: url_prefix + $(this).attr("action") + $.param(params),
+        url: url_prefix + ik_action + $.param(params),
         method: $(this).attr("method"),
         beforeSend: function () {
             pleaseWait.modal('show');
@@ -80,11 +101,19 @@ $("#form_ik").submit(function (event) {
     event.preventDefault();
 });
 
-$("#form_gripper").submit(function (event) {
+var form_gripper = $("#form_gripper");
+var gripper_action = form_gripper.attr('action');
+
+$.getJSON(url_prefix + gripper_action, function(data){
+    $("#gripper").val(data.closed ? "fermée" : "ouverte");
+});
+
+
+form_gripper.submit(function (event) {
     var opened = $("#gripper").val() == "ouverte";
 
     $.ajax({
-        url: url_prefix + $(this).attr("action") + (opened ? "open" : "close"),
+        url: url_prefix + gripper_action + (opened ? "/open" : "/close"),
         method: $(this).attr("method"),
         beforeSend: function(){
             pleaseWait.modal('show');

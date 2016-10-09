@@ -18,6 +18,7 @@
     prennent des positions hors de leurs limites mécaniques.</p>
 
 <form id="form_ik" class="form-horizontal" action="/api/v1/ik?" method="PUT">
+    <input hidden id="action-xyz" value="/api/v1/xyz">
     <div class="row">
         <div class="col-sm-8 col-sm-offset-2">
             <fieldset>

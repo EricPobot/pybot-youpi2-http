@@ -39,6 +39,7 @@ class RestAPIApp(YoupiBottleApp):
         self.route('/hi_z', 'PUT', callback=self.hi_z)
         self.route('/calibrate', 'PUT', callback=self.calibrate)
         self.route('/ik', 'PUT', callback=self.ik)
+        self.route('/xyz', 'GET', callback=self.get_xyz)
 
     def _http_error(self, status, msg):
         self.log_error(msg)
@@ -223,3 +224,8 @@ class RestAPIApp(YoupiBottleApp):
             self.arm.move_gripper_at,
             get_float_arg('x'), get_float_arg('y'), get_float_arg('z'), get_float_arg('pitch', 90)
         )
+
+    def get_xyz(self):
+        return {
+            k: float(v) for k, v in zip(('x', 'y', 'z'), self.arm.get_gripper_coordinates())
+        }
