@@ -15,10 +15,10 @@
 <%
     include("form_motion.tpl", action="/api/v1/pose?", legend="Position des articulations",
         predefined=[
-            ('Victoire', [0,0,0,0]),
-            ('Cobra', [0,-45,90,45]),
-            ('Révérence', [0,65,70,90]),
-            ('Bonjour', [0,45,45,0]),
+            ('Victoire', [0,0,0,0,0]),
+            ('Cobra', [0,-45,90,45,0]),
+            ('Révérence', [0,65,70,90,0]),
+            ('Bonjour', [0,45,45,0,90]),
         ]
     )
 %>

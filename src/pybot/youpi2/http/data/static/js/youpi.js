@@ -58,6 +58,7 @@ $("#angles-predef-select").change(function(){
     $("#shoulder").val(angles[1]);
     $("#elbow").val(angles[2]);
     $("#wrist").val(angles[3]);
+    $("#hand").val(angles[4]);
 });
 
 $("#xyz-predef-select").change(function(){
