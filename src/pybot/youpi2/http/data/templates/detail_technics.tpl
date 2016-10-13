@@ -33,7 +33,7 @@ STMicroelectronics.</p>
 par exemple, il allège considérablement la tâche du système de contrôle, et est ainsi parfaitement adapté à
 être piloté par des MCU de faible puissance.</p>
 
-<p>La Raspberry Pi disposant nativement d'un interface matérielle SPI, la mise en oeuvre du dSPIN dans
+<p>La Raspberry Pi disposant nativement d'une interface matérielle SPI, la mise en oeuvre du dSPIN dans
     ce contexte est très rapide.</p>
 
 <div class="row">
@@ -163,5 +163,5 @@ application. UNe structure familière aux habitués d'Arduino est utilise, sous 
 
 %include("jump_to_top")
 
-
+%include("toc_epilog.tpl")
 %include("epilog.tpl", version=version)
