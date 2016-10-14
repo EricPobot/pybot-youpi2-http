@@ -1,7 +1,7 @@
 %include("prolog.tpl", title="Youpi 2 - Démonstrations")
 
 <div class="page-header">
-    <h1>Les Démonstrations</h1>
+    <h1>Les démonstrations</h1>
 </div>
 
 %include("toc_prolog.tpl")
