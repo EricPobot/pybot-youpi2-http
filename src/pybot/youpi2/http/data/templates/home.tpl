@@ -8,7 +8,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <h2>Origines</h2>
         <p>L’association a reçu en don des enseignants de Physique du C.I.V.
             un bras robotique pédagogique Youpi, utilisé dans l'enseignement
@@ -19,7 +19,7 @@
             de le ressusciter à l'aide des moyens actuels.</p>
         <p><a class="btn btn-default" href="/detail/origins" role="button">Détails &raquo;</a></p>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <h2>Réalisations</h2>
         <p>Les moyens techniques de l'époque (ordinateur des années 80)
             ont été remplacés des ressources actuelles telles que la Raspberry Pi.</p>
@@ -29,7 +29,7 @@
             permettre d'ajouter facilement de nouvelles démonstrations.</p>
         <p><a class="btn btn-default" href="/detail/works" role="button">Détails &raquo;</a></p>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <h2>Détails technique</h2>
         <p>Youpi utilise une approche modulaire aussi bien au niveau hardware que software, dans le
             but d'être le plus évolutif possible et d'encourager les contributions.</p>
@@ -38,6 +38,15 @@
         <p>Le bus système D-Bus et le système de fichiers virtuels sont utilisés pour faire communiquer
             les différents composants logiciels.</p>
         <p><a class="btn btn-default" href="/detail/tech" role="button">Détails &raquo;</a></p>
+    </div>
+    <div class="col-md-3">
+        <h2>Démnstrations</h2>
+        <p>Diverses démonstrations sont incluses dans Youpi et illustrent différentes capacités.</p>
+        <p>Elles ont été développées en tant que petites applications indépendantes mettant en
+            oeuvre les ressources matérielles de Youpi (le bros, le panneau d'affichage).</p>
+        <p>Elles illustrent également la manière de développer de telles applications, et par
+            conséquent la facilité avec laquelle Youpi peut être étendu.</p>
+        <p><a class="btn btn-default" href="/detail/demos" role="button">Détails &raquo;</a></p>
     </div>
 </div>
 
