@@ -2,8 +2,9 @@
 
 <ul class="nav navbar-nav">
     <li><a href="/detail/origins">Origines</a></li>
-    <li><a href="/detail/works">Réalisations</a></li>
+    <li><a href="/detail/works">Travaux</a></li>
     <li><a href="/detail/tech">Technique</a></li>
+    <li><a href="/detail/demos">Démonstrations</a></li>
 </ul>
 <ul class="nav navbar-nav navbar-right">
     <li><a href="/about">A propos</a></li>

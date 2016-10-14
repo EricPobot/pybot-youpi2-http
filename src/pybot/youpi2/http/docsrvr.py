@@ -56,5 +56,11 @@ def technics():
     return _context()
 
 
+@route("/detail/demos")
+@view("detail_demos")
+def technics():
+    return _context()
+
+
 def main():
     run(host="0.0.0.0", port=80)
