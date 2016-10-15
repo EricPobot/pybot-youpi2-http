@@ -36,6 +36,7 @@
     étant calculées en coordonnées cartésiennes dans l'espace en fonction de la pile concernée et de sa hauteur,
     puis converties en angles des différentes articulations du bras,</li>
 </ul>
+<p>Elle est développée en Python.</p>
 
 %include("jump_to_top")
 
@@ -52,6 +53,7 @@
             les ancêtres de nos sites Web d'aujourd'hui. Notre bon vieux Minitel n'y voir ainsi que du feu,
             et se retrouve à discuter de la même manière que lorsqu'il était utilisé connecté au réseau
             téléphonique analogique.</p>
+        <p>Cette application est développée en Python.</p>
     </div>
     <div class="col-xs-6 col-md-4">
         <a href="/static/img/minitel.jpg" class="thumbnail">
@@ -73,10 +75,11 @@
             l'opérateur.
         <p>Outtre l'interface utilisateur, ce serveur gère les requêtes de l'API des Web Services permettant
             de contrôler Youpi depuis n'importe quelle machine connectée sur le mếmé réseau.</p>
-        <p>A noter que le même type de serveur est utilisé pour réaliser le serveur Web qui permet de naviguer
+        <p>A noter que les mêmes solutions techniques sont utilisées pour réaliser le serveur Web qui permet de naviguer
         dans les pages que vous consultez en ce moment.</p>
-        <p>Les technologies utilisées pour implémenter ces serveurs sont:</p>
+        <p>Les technologies utilisées sont:</p>
         <ul>
+            <li>Python,</li>
             <li>micro-framework Bottle,</li>
             <li>bibliothèque Javascript jQuery,</li>
             <li>couche de présentation Bootstrap,</li>
