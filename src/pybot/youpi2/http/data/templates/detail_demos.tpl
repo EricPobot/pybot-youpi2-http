@@ -10,8 +10,9 @@
 
 <div class="row">
     <div class="col-xs-6 col-md-8">
-        <p>Dans cette démonstration, Youpi résout le problème des Tours de Hanoï.</p>
-        <p>Les tours de Hanoï (originellement, <i>la tour d'Hanoïa</i>) sont un jeu de réflexion imaginé
+        <p>Dans cette démonstration, Youpi résout le célèbre problème des Tours de Hanoï.</p>
+        <p>Les tours de Hanoï <span class="text-muted">(originellement, <i>la tour d'Hanoïa</i>)</span>
+            sont un jeu de réflexion imaginé
             par le mathématicien français Édouard Lucas, et consistant à déplacer des disques de diamètres
             différents d'une tour de <b>départ</b> à une tour d'<b>arrivée</b> en passant par une tour
             <b>intermédiaire</b>,
@@ -21,7 +22,6 @@
                 <li>on ne peut placer un disque que sur un autre disque plus grand que lui ou sur un emplacement
                     vide.</li>
             </ul>
-            <p>On suppose que cette dernière règle est également respectée dans la configuration de départ.</p>
     </div>
     <div class="col-xs-6 col-md-4">
         <a href="/static/img/hanoi.jpg" class="thumbnail">
@@ -29,6 +29,16 @@
         </a>
     </div>
 </div>
+
+<p>On se limite ici à 3 palets, le calcul mathématique démontrant que le nombre minimal de
+    mouvements pour déplacer une tour de <var>n</var> éléments est de <var>2^n - 1</var>.
+    La légende originale qui mentionne une tour de 64 palets et annonce la fin de l'univers
+        dès qu'elle aura été entièrement déplacé nous laisse d'ailleurs suffisamment de temps
+    pour profiter de la vie. En effet, en supposant un déplacement par seconde, le temps total sera
+    de <b>584,5 milliards d'années</b>, soit
+        <b>43 fois</b> l'âge estimé de l'univers
+    <span class="text-muted">(13,7 milliards d'années selon certaines sources)</span>.</p>
+
 <p>Cette démonstration illustre plusieurs aspects de Youpi:</p>
 <ul>
     <li>la précision de ses mouvements,</li>
@@ -36,6 +46,7 @@
     étant calculées en coordonnées cartésiennes dans l'espace en fonction de la pile concernée et de sa hauteur,
     puis converties en angles des différentes articulations du bras,</li>
 </ul>
+
 <p>Elle est développée en Python.</p>
 
 %include("jump_to_top")
@@ -44,7 +55,7 @@
 
 <div class="row">
     <div class="col-xs-6 col-md-8">
-        <p>Dans cette démonstration, Youpi est contrôlé par un opérateur qui lui donne des
+        <p>Youpi est ici contrôlé par un opérateur qui lui donne des
             instructions au moyen d'un antique Minitel.</p>
         <p>Il s'agit d'un clin d'oeil technologique, dans lequel on relie deux objets technologiques des années
             80 (Youpi et le Minitel) par l'intermédiaire d'une technologie du 21ème siècle (la Raspberry Pi).</p>

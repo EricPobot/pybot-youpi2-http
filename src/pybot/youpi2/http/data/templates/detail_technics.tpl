@@ -51,29 +51,27 @@ par exemple, il allège considérablement la tâche du système de contrôle, et
     </div>
 </div>
 
-<div class="row">
-    <p>Une couche logicielle a été développée pour fournir les services suivants, organisées en couches :</p>
-    <ol>
-        <li>communication avec les dSPINs au travers de la liaison SPI, configurée en daisy-chain,</li>
-        <li>modélisation du bras de manière à dialoguer avec lui en termes d'angles d'articulation, la correspondance
-        avec les consignes réelles envoyées au moteurs étant prises en charge de manière transparente,</li>
-        <li>exposition des services de haut niveau du modèle (déplacement vers une pose particulière,
-            actions de la pince,...)
-        sur le bus système D-Bus, afin de les rendre utilisables par une application développée dans
-        n'importe quel langage pour lequel un <i>binding</i> D-Bus existe (soit à peu près tous les langages courants,
-        de C/C++ à Python, en passant par Java,...) y compris <i>bash</i>,
-            grâce à la commande <kbd>dbus-send</kbd>.</li>
-    </ol>
-    <p>Aussi bien le <i>shell</i> de supervision que les différentes applications de démonstation utilisent la couche 3
-    pour interagir avec le bras.</p>
-    <p>Les différentes couches composant le driver du bras ont été développée en Python, à l'aide de la librairie
-    <var>dbus-python</var> pour la couche 3 réalisant le binding D-Bus.</p>
-    <p class="text-muted">Pour être exact, dbus-python n'est pas
-    utilisé directement par ce composant, qui s'appuie en réalité sur une encapsulation des mécanismes de bas niveau
-    fournie par l'environnment <var>nROS</var> développé par l'auteur. Cet environnement reproduit de manière
-    approchée et simplifiée les mécanismes de <var>ROS</var>, mais en utilisant D-Bus comme support de communication
-    sous-jacent.</p>
-</div>
+<p>Une couche logicielle a été développée pour fournir les services suivants, organisées en couches :</p>
+<ol>
+    <li>communication avec les dSPINs au travers de la liaison SPI, configurée en daisy-chain,</li>
+    <li>modélisation du bras de manière à dialoguer avec lui en termes d'angles d'articulation, la correspondance
+    avec les consignes réelles envoyées au moteurs étant prises en charge de manière transparente,</li>
+    <li>exposition des services de haut niveau du modèle (déplacement vers une pose particulière,
+        actions de la pince,...)
+    sur le bus système D-Bus, afin de les rendre utilisables par une application développée dans
+    n'importe quel langage pour lequel un <i>binding</i> D-Bus existe (soit à peu près tous les langages courants,
+    de C/C++ à Python, en passant par Java,...) y compris <i>bash</i>,
+        grâce à la commande <kbd>dbus-send</kbd>.</li>
+</ol>
+<p>Aussi bien le <i>shell</i> de supervision que les différentes applications de démonstation utilisent la couche 3
+pour interagir avec le bras.</p>
+<p>Les différentes couches composant le driver du bras ont été développée en Python, à l'aide de la librairie
+<var>dbus-python</var> pour la couche 3 réalisant le binding D-Bus.</p>
+<p class="text-muted">Pour être exact, dbus-python n'est pas
+utilisé directement par ce composant, qui s'appuie en réalité sur une encapsulation des mécanismes de bas niveau
+fournie par l'environnment <samp>nROS</samp> développé par l'auteur. Cet environnement reproduit de manière
+approchée et simplifiée les mécanismes de <samp>ROS</samp>, mais en utilisant D-Bus comme support de communication
+sous-jacent.</p>
 
 %include("jump_to_top")
 
@@ -118,26 +116,25 @@ par exemple, il allège considérablement la tâche du système de contrôle, et
         </a>
     </div>
 </div>
-<div class="row">
-    <p>Dans un même esprit que pour le bras lui-même, l'accès au panneau de contrôle par les applications est
-    découplé grâce à un driver. Pour en rendre l'usage le plus simple possible, et n'étant pas contraint par des
-    impératifs de performances de communication compte tenu du temps de réaction du LCD lui-même, l'option
-    FUSE (File System in Userspace) a été utilisée ici.</p>
-    <p>Elle permet de présenter les différents points de contrôle des fonctions (affichage de texte, lecture de l'étant
-    des touches, modification de l'état des LEDs,...) sous forme d'une collection de fichiers virtuels, à l'image
-    de ceux présents dans les arborescences <var>/sys/class</var>, <var>/proc</var> ou encore <var>/dev</var>
-    de Linux.</p>
-    <p>L'interaction avec le paneeau se résume donc à lire et écrire dans de simples fichiers texte, chose possible
-    de manière native avec n'importe quel langage, et même directement depuis la ligne de commande au moyen des
-    commandes <kbd>echo</kbd> ou <kbd>cat</kbd>.</p>
-    <p>Pour faire bonne mesure, à l'accès en lecture à l'état courant des touches et de l'interrupteur
-    à clé a été la génération d'événements de type clavier/souris via le mécanisme <var>evdev</var>. Ceci permet
-    d'écrire l'application cliente sous forme d'une logique événementielle au lieu d'une logique de <i>polling</i>
-    périodique. Cette option donne un peu plus de liberté au développeur d'extension quant au paradigme qu'il
-    préfère mettre en oeuvre.</p>
-    <p>Ce driver a été développé en Python et s'appuie sur la librairie <var>fusepy</var>. La gestion des événements
-    est basée sur la librairie <var>evdev</var>.</p>
-</div>
+
+<p>Dans un même esprit que pour le bras lui-même, l'accès au panneau de contrôle par les applications est
+découplé grâce à un driver. Pour en rendre l'usage le plus simple possible, et n'étant pas contraint par des
+impératifs de performances de communication compte tenu du temps de réaction du LCD lui-même, l'option
+FUSE (File System in Userspace) a été utilisée ici.</p>
+<p>Elle permet de présenter les différents points de contrôle des fonctions (affichage de texte, lecture de l'étant
+des touches, modification de l'état des LEDs,...) sous forme d'une collection de fichiers virtuels, à l'image
+de ceux présents dans les arborescences <samp>/sys/class</samp>, <samp>/proc</samp> ou encore <samp>/dev</samp>
+de Linux.</p>
+<p>L'interaction avec le paneeau se résume donc à lire et écrire dans de simples fichiers texte, chose possible
+de manière native avec n'importe quel langage, et même directement depuis la ligne de commande au moyen des
+commandes <kbd>echo</kbd> ou <kbd>cat</kbd>.</p>
+<p>Pour faire bonne mesure, à l'accès en lecture à l'état courant des touches et de l'interrupteur
+à clé a été la génération d'événements de type clavier/souris via le mécanisme <samp>evdev</samp>. Ceci permet
+d'écrire l'application cliente sous forme d'une logique événementielle au lieu d'une logique de <i>polling</i>
+périodique. Cette option donne un peu plus de liberté au développeur d'extension quant au paradigme qu'il
+préfère mettre en oeuvre.</p>
+<p>Ce driver a été développé en Python et s'appuie sur la librairie <samp>fusepy</samp>. La gestion des événements
+est basée sur la librairie <samp>evdev</samp>.</p>
 
 %include("jump_to_top")
 
@@ -188,26 +185,24 @@ par exemple, il allège considérablement la tâche du système de contrôle, et
 
 <h2>Le shell</h2>
 
-<div class="row">
-    <p>A la manière de Linux, l'environnement logiciel de Youpi dispose d'un shell, lancé au démarrage du système et
-    fournissant l'accès aux diverses fonctions et applications. Il utilise le panneau de contrôle pour permettre à
-    l'utilisateur de naviguer dans l'arborescence des fonctions, et lance en tant que process indépendant
-    les diverses applications qui les implémentent, tout comme le fait l'interface graphique du bureau
-    des systèmes pour micro-ordinateurs ou smartphones.</p>
+<p>A la manière de Linux, l'environnement logiciel de Youpi dispose d'un shell, lancé au démarrage du système et
+fournissant l'accès aux diverses fonctions et applications. Il utilise le panneau de contrôle pour permettre à
+l'utilisateur de naviguer dans l'arborescence des fonctions, et lance en tant que process indépendant
+les diverses applications qui les implémentent, tout comme le fait l'interface graphique du bureau
+des systèmes pour micro-ordinateurs ou smartphones.</p>
 
-    <p>Ajouter de nouvelles fonctions est simple, et consiste à écrire le programme qui sera lancé pour l'exécuter.
-    Bien que l'ensemble des logiciels de Youpi soient écrits en Python à l'heure actuelle, ceci n'est pas une contrainte
-    et rien n'empêche d'en utiliser un autre, du moment qu'il fournit le moyen d'accéder à D-Bus pour communiquer
-    avec le driver du bras.</p>
+<p>Ajouter de nouvelles fonctions est simple, et consiste à écrire le programme qui sera lancé pour l'exécuter.
+Bien que l'ensemble des logiciels de Youpi soient écrits en Python à l'heure actuelle, ceci n'est pas une contrainte
+et rien n'empêche d'en utiliser un autre, du moment qu'il fournit le moyen d'accéder à D-Bus pour communiquer
+avec le driver du bras.</p>
 
-    <p>Afin de rendre la tâche la plus simple possible pour les développeurs de telles extensions, et ainsi encourager
-    les contributeurs à étendre les possibilités de Youpi, un socle de base est fourni pour les adeptes de Python. Il
-    prend en charge les tâches communes afin de laisser le contributeur se concentrer sur les spécificités de son
-    application. UNe structure familière aux habitués d'Arduino est utilise, sous forme du combo de méthodes
-    <samp>setup</samp>, <samp>loop</samp> et <samp>teardown</samp>.</p>
+<p>Afin de rendre la tâche la plus simple possible pour les développeurs de telles extensions, et ainsi encourager
+les contributeurs à étendre les possibilités de Youpi, un socle de base est fourni pour les adeptes de Python. Il
+prend en charge les tâches communes afin de laisser le contributeur se concentrer sur les spécificités de son
+application. UNe structure familière aux habitués d'Arduino est utilise, sous forme du combo de méthodes
+<samp>setup</samp>, <samp>loop</samp> et <samp>teardown</samp>.</p>
 
-    <p>Le shell de Youpi est intégralement développé en Python.</p>
-</div>
+<p>Le shell de Youpi est intégralement développé en Python.</p>
 
 %include("jump_to_top")
 
