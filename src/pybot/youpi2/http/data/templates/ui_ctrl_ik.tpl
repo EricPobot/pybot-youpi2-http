@@ -11,21 +11,22 @@
 
 <div class="page-header"><h1>Contrôle par cinématique inverse</h1></div>
 
-<p>La cinématique inverse consiste à déterminer les angles que les articulations doivent
-    prendre afin que l'effecteur (ici la pince) soit positionnée aux coordonnées demandées.</p>
+<div class="well">
+    <p>La cinématique inverse consiste à déterminer les angles que les articulations doivent
+        prendre afin que l'effecteur (ici la pince) soit positionnée aux coordonnées demandées.</p>
 
-<p> Les coordonnées sont définies par:</p>
-    <ul>
-    <li>X, vers l'avant du boîter, égale à 0 au niveau de la face avant,</li>
-    <li>Y, vers la droite (en faisant face au boîtier), égale à 0 au niveau de l'axe de rotation
-        de la base du bras,</li>
-    <li>Z, vers le haut, égale à 0 au niveau de la table.</li>
-    </ul>
+    <p> Les coordonnées sont définies par:</p>
+        <ul>
+        <li>X, vers l'avant du boîter, égale à 0 au niveau de la face avant,</li>
+        <li>Y, vers la droite (en faisant face au boîtier), égale à 0 au niveau de l'axe de rotation
+            de la base du bras,</li>
+        <li>Z, vers le haut, égale à 0 au niveau de la table.</li>
+        </ul>
 
-<p> Il se peut qu'aucune solution n'existe pour la position demandée, soit parce qu'elle
-    est hors d'atteinte, soit parce qu'elle nécessite que certaines des articulations
-    prennent des positions hors de leurs limites mécaniques.</p>
-
+    <p> Il se peut qu'aucune solution n'existe pour la position demandée, soit parce qu'elle
+        est hors d'atteinte, soit parce qu'elle nécessite que certaines des articulations
+        prennent des positions hors de leurs limites mécaniques.</p>
+</div>
 <form id="form_ik" class="form-horizontal" action="/api/v1/ik?" method="PUT">
     <input hidden id="action-xyz" value="/api/v1/xyz">
     <div class="row">
