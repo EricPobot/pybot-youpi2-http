@@ -10,13 +10,19 @@ setup(
     packages=find_packages("src"),
     package_dir={'': 'src'},
     package_data={'pybot.youpi2.http': [
+        # stylesheets
         'data/static/css/bootstrap-slate.min.css',
         'data/static/css/bootstrap-toc.min.css',
+        # fonts
         'data/static/css/youpi.css',
         'data/static/fonts/*.ttf',
+        # Javascript
         'data/static/js/*.min.js',
+        'data/static/js/fr.js',
         'data/static/js/youpi*.js',
+        # graphics
         'data/static/img/*',
+        # templates
         'data/templates/*.tpl'
     ]},
     url='',
