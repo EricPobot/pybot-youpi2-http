@@ -7,12 +7,14 @@ from Queue import Queue, Empty
 
 from pybot.youpi2.app import YoupiApplication
 
-from __version__ import version
-from base import YoupiBottleApp, TEMPLATE_PATH, STATIC_PATH
-from apps.api import RestAPIApp
-from apps.ui import UIApp
+from .__version__ import version
+from .base import YoupiBottleApp, TEMPLATE_PATH #, STATIC_PATH
+from .apps.api import RestAPIApp
+from .apps.ui import UIApp
 
 __author__ = 'Eric Pascual'
+
+my_package = '.'.join(__name__.split('.')[:-1])
 
 
 class HTTPServerApp(YoupiApplication):
@@ -32,6 +34,12 @@ class HTTPServerApp(YoupiApplication):
     def add_custom_arguments(self, parser):
         parser.add_argument('--port', type=int, default=self.DEFAULT_LISTEN_PORT)
 
+    def get_apps(self):
+        ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui')
+        api_app = RestAPIApp(arm=self.arm, panel=self.pnl, name='app-api')
+
+        return ui_app, api_app
+
     def setup(self, port=DEFAULT_LISTEN_PORT, **kwargs):
         self.display_queue = Queue()
         self.display_queue_worker = threading.Thread(target=self.process_display_requests)
@@ -41,21 +49,20 @@ class HTTPServerApp(YoupiApplication):
 
         # start it by executing the run() method in a thread
         def bottle_run():
-            self.log_info("Bottle v%s server starting up (using %s)...", bottle.__version__, self.server)
-            self.log_info('template path: %s', TEMPLATE_PATH)
-            self.log_info('static path: %s', STATIC_PATH)
-
             app = YoupiBottleApp(arm=self.arm, panel=self.pnl, name='app-root')
-            ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui')
-            api_app = RestAPIApp(arm=self.arm, panel=self.pnl, name='app-api')
+            ui_app, api_app = self.get_apps()
 
             app.add_hook('before_request', self.before_request)
             app.add_hook('after_request', self.after_request)
 
             app.merge(ui_app.routes)
-            app.mount('/api/v1/', api_app)
+            if api_app:
+                app.mount('/api/v1/', api_app)
 
-            self.log_info("Listening on http://%s:%d/" % (self.server.host, self.server.port))
+            self.log_info("Bottle v%s server starting up (using %s)...", bottle.__version__, self.server)
+            self.log_info('- template path: %s', TEMPLATE_PATH)
+            self.log_info('- static path: %s', app.static_path)
+            self.log_info("- listening on http://%s:%d/" % (self.server.host, self.server.port))
 
             bottle.run(app=app, server=self.server)
 
