@@ -2,7 +2,7 @@
 
 from bottle import template, static_file
 
-from pybot.youpi2.http.base import YoupiBottleApp, STATIC_PATH
+from pybot.youpi2.http.base import YoupiBottleApp
 from pybot.youpi2.http.__version__ import version
 
 __author__ = 'Eric Pascual'
@@ -35,7 +35,7 @@ class UIApp(YoupiBottleApp):
 
     def serve_static(self, filepath):
         self.log_debug('requesting static file: %s', filepath)
-        return static_file(filepath, root=STATIC_PATH)
+        return static_file(filepath, root=self.static_path)
 
     def home(self):
         return self._render_template('ui_home')
