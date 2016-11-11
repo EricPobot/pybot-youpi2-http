@@ -2,6 +2,7 @@
 
 from pkg_resources import resource_filename
 import os
+import inspect
 
 from bottle import Bottle, TEMPLATE_PATH
 
@@ -9,12 +10,13 @@ from pybot.core.log import LogMixin, INFO
 
 __author__ = 'Eric Pascual'
 
-my_package = '.'.join(__name__.split('.')[:-1])
-
 
 class YoupiBottleApp(Bottle, LogMixin):
     def __init__(self, name=None, arm=None, panel=None, log_level=INFO,
                  template_path="data/templates/", static_path="data/static/"):
+        fqn = inspect.getmodule(self).__name__
+        my_package = '.'.join(fqn.split('.')[:-1])
+
         path = resource_filename(my_package, template_path)
         if not os.path.isdir(path):
             raise ValueError('path not found: ' + path)
