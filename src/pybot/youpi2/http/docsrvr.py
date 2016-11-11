@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from bottle import route, run, template, static_file, view
+from pkg_resources import resource_filename
+
+from bottle import route, run, static_file, view
 
 from __version__ import version
-from base import STATIC_PATH
 
 __author__ = 'Eric Pascual'
 
 my_package = '.'.join(__name__.split('.')[:-1])
+STATIC_PATH = resource_filename(my_package, "data/static")
 
 
 def _context(**kwargs):

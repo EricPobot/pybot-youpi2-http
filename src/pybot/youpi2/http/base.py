@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pkg_resources import resource_filename
+import os
 
 from bottle import Bottle, TEMPLATE_PATH
 
@@ -10,12 +11,19 @@ __author__ = 'Eric Pascual'
 
 my_package = '.'.join(__name__.split('.')[:-1])
 
-TEMPLATE_PATH.insert(0, resource_filename(my_package, "data/templates/"))
-STATIC_PATH = resource_filename(my_package, "data/static/")
-
 
 class YoupiBottleApp(Bottle, LogMixin):
-    def __init__(self, name=None, arm=None, panel=None, log_level=INFO):
+    def __init__(self, name=None, arm=None, panel=None, log_level=INFO,
+                 template_path="data/templates/", static_path="data/static/"):
+        path = resource_filename(my_package, template_path)
+        if not os.path.isdir(path):
+            raise ValueError('path not found: ' + path)
+        TEMPLATE_PATH.insert(0, path)
+
+        self.static_path = resource_filename(my_package, static_path)
+        if not os.path.isdir(self.static_path):
+            raise ValueError('path not found: ' + self.static_path)
+
         Bottle.__init__(self)
         LogMixin.__init__(self, name=name, level=log_level)
 
