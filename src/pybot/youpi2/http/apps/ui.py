@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from bottle import template, static_file
-
-from pybot.youpi2.http.base import YoupiBottleApp
+from pybot.youpi2.http.base import YoupiUIBottleApp
 from pybot.youpi2.http.__version__ import version
 
 __author__ = 'Eric Pascual'
 
 
-class UIApp(YoupiBottleApp):
+class UIApp(YoupiUIBottleApp):
     def __init__(self, *args, **kwargs):
         super(UIApp, self).__init__(*args, **kwargs)
 
@@ -22,7 +20,7 @@ class UIApp(YoupiBottleApp):
         self.route('/control/joint', callback=self.ctrl_joint)
         self.route('/control/ik', callback=self.ctrl_ok)
 
-    def _context(self, **kwargs):
+    def get_context(self, **kwargs):
         context = {
             'title': 'Youpi 2.0',
             'version': version
@@ -30,24 +28,17 @@ class UIApp(YoupiBottleApp):
         context.update(kwargs)
         return context
 
-    def _render_template(self, name, **kwargs):
-        return template(name, self._context(**kwargs))
-
-    def serve_static(self, filepath):
-        self.log_debug('requesting static file: %s', filepath)
-        return static_file(filepath, root=self.static_path)
-
     def home(self):
-        return self._render_template('ui_home')
+        return self.render_template('ui_home')
 
     def about(self):
-        return self._render_template('ui_about')
+        return self.render_template('ui_about')
 
     def ctrl_motor(self):
-        return self._render_template('ui_ctrl_motor')
+        return self.render_template('ui_ctrl_motor')
 
     def ctrl_joint(self):
-        return self._render_template('ui_ctrl_joint')
+        return self.render_template('ui_ctrl_joint')
 
     def ctrl_ok(self):
-        return self._render_template('ui_ctrl_ik')
+        return self.render_template('ui_ctrl_ik')

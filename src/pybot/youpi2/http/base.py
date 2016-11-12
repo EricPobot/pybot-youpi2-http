@@ -4,7 +4,7 @@ from pkg_resources import resource_filename
 import os
 import inspect
 
-from bottle import Bottle, TEMPLATE_PATH
+from bottle import Bottle, TEMPLATE_PATH, template, static_file, HTTPError
 
 from pybot.core.log import LogMixin, INFO
 
@@ -21,6 +21,8 @@ class YoupiBottleApp(Bottle, LogMixin):
             fqn = inspect.getmodule(self).__name__
             resources_packages = ['.'.join(fqn.split('.')[:-1])]
 
+        self.static_path = []
+
         for pkg in resources_packages:
             path = resource_filename(pkg, template_path)
             if path not in TEMPLATE_PATH:
@@ -29,9 +31,10 @@ class YoupiBottleApp(Bottle, LogMixin):
                 TEMPLATE_PATH.insert(0, path)
                 self.log_info("%s added to bottle.TEMPLATE_PATH", path)
 
-        self.static_path = resource_filename(resources_packages, static_path)
-        if not os.path.isdir(self.static_path):
-            raise ValueError('path not found: ' + self.static_path)
+            path = resource_filename(pkg, static_path)
+            if not os.path.isdir(path):
+                raise ValueError('path not found: ' + path)
+            self.static_path.insert(0, path)
 
         Bottle.__init__(self)
 
@@ -42,3 +45,23 @@ class YoupiBottleApp(Bottle, LogMixin):
 
     def get_help(self):
         return {'routes': [r.method + ' ' + r.rule for r in self.routes]}
+
+
+class YoupiUIBottleApp(YoupiBottleApp):
+    def get_context(self, **kwargs):
+        return {}
+
+    def render_template(self, name, **kwargs):
+        return template(name, self.get_context(**kwargs))
+
+    def serve_static(self, filepath):
+        self.log_debug('requesting static file: %s', filepath)
+
+        last_path = self.static_path[-1]
+        for path in self.static_path:
+            try:
+                return static_file(filepath, root=path)
+            except HTTPError:
+                if path == last_path:
+                    raise
+
