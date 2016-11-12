@@ -26,7 +26,7 @@ class YoupiBottleApp(Bottle, LogMixin):
             if not os.path.isdir(path):
                 raise ValueError('path not found: ' + path)
             TEMPLATE_PATH.insert(0, path)
-            self.log_info("%s added to bottle.TEMPLATE_PATH", panel)
+            self.log_info("%s added to bottle.TEMPLATE_PATH", path)
 
         self.static_path = resource_filename(resources_package, static_path)
         if not os.path.isdir(self.static_path):
