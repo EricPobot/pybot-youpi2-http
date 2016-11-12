@@ -36,8 +36,8 @@ class HTTPServerApp(YoupiApplication):
         parser.add_argument('--port', type=int, default=self.DEFAULT_LISTEN_PORT)
 
     def get_apps(self):
-        ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui', resources_package=self.RESOURCES_PACKAGE)
-        api_app = RestAPIApp(arm=self.arm, panel=self.pnl, name='app-api', resources_package=self.RESOURCES_PACKAGE)
+        ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui', resources_packages=[self.RESOURCES_PACKAGE])
+        api_app = RestAPIApp(arm=self.arm, panel=self.pnl, name='app-api', resources_packages=[self.RESOURCES_PACKAGE])
 
         return ui_app, api_app
 
@@ -53,7 +53,7 @@ class HTTPServerApp(YoupiApplication):
             app = YoupiBottleApp(
                 arm=self.arm, panel=self.pnl,
                 name='app-root',
-                resources_package=self.RESOURCES_PACKAGE
+                resources_packages=[self.RESOURCES_PACKAGE]
             )
             ui_app, api_app = self.get_apps()
 
