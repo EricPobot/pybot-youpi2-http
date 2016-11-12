@@ -13,21 +13,26 @@ __author__ = 'Eric Pascual'
 
 class YoupiBottleApp(Bottle, LogMixin):
     def __init__(self, name=None, arm=None, panel=None, log_level=INFO,
-                 template_path="data/templates/", static_path="data/static/"):
-        fqn = inspect.getmodule(self).__name__
-        my_package = '.'.join(fqn.split('.')[:-1])
+                 template_path="data/templates/", static_path="data/static/",
+                 resources_package=None):
+        LogMixin.__init__(self, name=name, level=log_level)
 
-        path = resource_filename(my_package, template_path)
-        if not os.path.isdir(path):
-            raise ValueError('path not found: ' + path)
-        TEMPLATE_PATH.insert(0, path)
+        if not resources_package:
+            fqn = inspect.getmodule(self).__name__
+            resources_package = '.'.join(fqn.split('.')[:-1])
 
-        self.static_path = resource_filename(my_package, static_path)
+        path = resource_filename(resources_package, template_path)
+        if path not in TEMPLATE_PATH:
+            if not os.path.isdir(path):
+                raise ValueError('path not found: ' + path)
+            TEMPLATE_PATH.insert(0, path)
+            self.log_info("%s added to bottle.TEMPLATE_PATH", panel)
+
+        self.static_path = resource_filename(resources_package, static_path)
         if not os.path.isdir(self.static_path):
             raise ValueError('path not found: ' + self.static_path)
 
         Bottle.__init__(self)
-        LogMixin.__init__(self, name=name, level=log_level)
 
         self.arm = arm
         self.panel = panel

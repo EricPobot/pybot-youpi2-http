@@ -23,6 +23,7 @@ class HTTPServerApp(YoupiApplication):
     VERSION = version
 
     DEFAULT_LISTEN_PORT = 8080
+    RESOURCES_PACKAGE = my_package
 
     server = None
     server_thread = None
@@ -35,12 +36,12 @@ class HTTPServerApp(YoupiApplication):
         parser.add_argument('--port', type=int, default=self.DEFAULT_LISTEN_PORT)
 
     def get_apps(self):
-        ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui')
-        api_app = RestAPIApp(arm=self.arm, panel=self.pnl, name='app-api')
+        ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui', resources_package=self.RESOURCES_PACKAGE)
+        api_app = RestAPIApp(arm=self.arm, panel=self.pnl, name='app-api', resources_package=self.RESOURCES_PACKAGE)
 
         return ui_app, api_app
 
-    def setup(self, port=DEFAULT_LISTEN_PORT, **kwargs):
+    def setup(self, port=DEFAULT_LISTEN_PORT, resources_package=None, **kwargs):
         self.display_queue = Queue()
         self.display_queue_worker = threading.Thread(target=self.process_display_requests)
 
@@ -49,7 +50,11 @@ class HTTPServerApp(YoupiApplication):
 
         # start it by executing the run() method in a thread
         def bottle_run():
-            app = YoupiBottleApp(arm=self.arm, panel=self.pnl, name='app-root')
+            app = YoupiBottleApp(
+                arm=self.arm, panel=self.pnl,
+                name='app-root',
+                resources_package=self.RESOURCES_PACKAGE
+            )
             ui_app, api_app = self.get_apps()
 
             app.add_hook('before_request', self.before_request)
@@ -137,6 +142,8 @@ class HTTPServerApp(YoupiApplication):
     def teardown(self, exit_code):
         if self.display_queue_worker:
             self.display_queue_worker.join(1)
+            if self.display_queue_worker.is_alive():
+                self.log_error('timeout reached while waiting for display queue thread termination')
 
         self.pnl.center_text_at('', 2)
         self.pnl.center_text_at('Terminating...', 3)
@@ -149,6 +156,8 @@ class HTTPServerApp(YoupiApplication):
             if self.server_thread:
                 self.log_info('waiting for thread termination')
                 self.server_thread.join(5)
+                if self.server_thread.is_alive():
+                    self.log_error('timeout reached while waiting for server thread termination')
                 self.server_thread = None
 
             self.server = None
