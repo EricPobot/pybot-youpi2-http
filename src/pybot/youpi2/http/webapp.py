@@ -8,7 +8,7 @@ from Queue import Queue, Empty
 from pybot.youpi2.app import YoupiApplication
 
 from .__version__ import version
-from .base import YoupiBottleApp, TEMPLATE_PATH #, STATIC_PATH
+from .base import YoupiBottleApp, TEMPLATE_PATH, STATIC_PATH
 from .apps.api import RestAPIApp
 from .apps.ui import UIApp
 
@@ -23,7 +23,7 @@ class HTTPServerApp(YoupiApplication):
     VERSION = version
 
     DEFAULT_LISTEN_PORT = 8080
-    RESOURCES_PACKAGE = my_package
+    RESOURCES_SEARCH_PATH = [my_package]
 
     server = None
     server_thread = None
@@ -31,18 +31,23 @@ class HTTPServerApp(YoupiApplication):
 
     display_queue = None
     display_queue_worker = None
+    debug_display_worker = False
 
-    def add_custom_arguments(self, parser):
-        parser.add_argument('--port', type=int, default=self.DEFAULT_LISTEN_PORT)
+    @classmethod
+    def add_custom_arguments(cls, parser):
+        parser.add_argument('--port', type=int, default=cls.DEFAULT_LISTEN_PORT)
+        parser.add_argument('--debug-display-worker', dest='debug_display_worker', action='store_true',
+                            help='activates debug log messages for the panel display worker thread')
 
     def get_apps(self):
-        ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui', resources_packages=[self.RESOURCES_PACKAGE])
-        api_app = RestAPIApp(arm=self.arm, panel=self.pnl, name='app-api', resources_packages=[self.RESOURCES_PACKAGE])
+        ui_app = UIApp(arm=self.arm, panel=self.pnl, name='app-ui', log_level=self.log_getEffectiveLevel())
+        api_app = RestAPIApp(arm=self.arm, panel=self.pnl, name='app-api', log_level=self.log_getEffectiveLevel())
 
         return ui_app, api_app
 
-    def setup(self, port=DEFAULT_LISTEN_PORT, resources_package=None, **kwargs):
+    def setup(self, port=DEFAULT_LISTEN_PORT, debug_display_worker=False, resources_package=None, **kwargs):
         self.display_queue = Queue()
+        self.debug_display_worker = debug_display_worker
         self.display_queue_worker = threading.Thread(target=self.process_display_requests)
 
         # create the Bottle server using a sub-classed version of WSGIServer
@@ -53,7 +58,8 @@ class HTTPServerApp(YoupiApplication):
             app = YoupiBottleApp(
                 arm=self.arm, panel=self.pnl,
                 name='app-root',
-                resources_packages=[self.RESOURCES_PACKAGE]
+                resources_search_path=self.RESOURCES_SEARCH_PATH,
+                log_level=self.log_getEffectiveLevel()
             )
             ui_app, api_app = self.get_apps()
 
@@ -65,8 +71,12 @@ class HTTPServerApp(YoupiApplication):
                 app.mount('/api/v1/', api_app)
 
             self.log_info("Bottle v%s server starting up (using %s)...", bottle.__version__, self.server)
-            self.log_info('- template path: %s', TEMPLATE_PATH)
-            self.log_info('- static path: %s', app.static_path)
+            self.log_info('+ template path:')
+            for p in TEMPLATE_PATH:
+                self.log_info('  - ' + p)
+            self.log_info('+ static path:')
+            for p in STATIC_PATH:
+                self.log_info('  - ' + p)
             self.log_info("- listening on http://%s:%d/" % (self.server.host, self.server.port))
 
             bottle.run(app=app, server=self.server)
@@ -103,14 +113,16 @@ class HTTPServerApp(YoupiApplication):
         while not self.terminated:
             try:
                 req = self.display_queue.get(True, 0.01)
-                self.log_debug('processing display request: %s', req)
+                if self.debug_display_worker:
+                    self.log_debug('processing display request: %s', req)
                 try:
                     req.execute()
                 except Exception as e:
                     self.log_error('error while processing: %s', req)
                     self.log_error(e)
                 else:
-                    self.log_debug('.. done')
+                    if self.debug_display_worker:
+                        self.log_debug('.. done')
 
             except Empty:
                 pass
@@ -120,7 +132,8 @@ class HTTPServerApp(YoupiApplication):
     def post_display_request(self, meth, *args, **kwargs):
         req = DisplayRequest(meth, args, kwargs)
         self.display_queue.put(req)
-        self.log_debug('display request added to queue: %s', req)
+        if self.debug_display_worker:
+            self.log_debug('display request added to queue: %s', req)
 
     def loop(self):
         if self.first_loop:
@@ -219,4 +232,4 @@ class DisplayRequest(object):
 
 
 def main():
-    HTTPServerApp().main()
+    HTTPServerApp.main()

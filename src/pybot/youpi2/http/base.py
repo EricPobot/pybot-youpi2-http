@@ -2,7 +2,6 @@
 
 from pkg_resources import resource_filename
 import os
-import inspect
 
 from bottle import Bottle, TEMPLATE_PATH, template, static_file, HTTPError
 
@@ -10,31 +9,39 @@ from pybot.core.log import LogMixin, INFO
 
 __author__ = 'Eric Pascual'
 
+STATIC_PATH = []
+
 
 class YoupiBottleApp(Bottle, LogMixin):
     def __init__(self, name=None, arm=None, panel=None, log_level=INFO,
                  template_path="data/templates/", static_path="data/static/",
-                 resources_packages=None):
+                 resources_search_path=None):
         LogMixin.__init__(self, name=name, level=log_level)
+        self.log_info('log level set to %s', self.log_effective_level_as_string)
 
-        if not resources_packages:
-            fqn = inspect.getmodule(self).__name__
-            resources_packages = ['.'.join(fqn.split('.')[:-1])]
+        if resources_search_path:
+            self.log_info('processing resource search path :')
+            for pkg in resources_search_path:
+                self.log_info('+ ' + pkg)
+                path = resource_filename(pkg, template_path)
+                self.log_info('  + template path : %s', path)
+                if path not in TEMPLATE_PATH:
+                    if not os.path.isdir(path):
+                        raise ValueError('path not found: ' + path)
+                    TEMPLATE_PATH.insert(0, path)
+                    self.log_info("    added to bottle.TEMPLATE_PATH")
+                else:
+                    self.log_info("    already in bottle.TEMPLATE_PATH")
 
-        self.static_path = []
-
-        for pkg in resources_packages:
-            path = resource_filename(pkg, template_path)
-            if path not in TEMPLATE_PATH:
-                if not os.path.isdir(path):
-                    raise ValueError('path not found: ' + path)
-                TEMPLATE_PATH.insert(0, path)
-                self.log_info("%s added to bottle.TEMPLATE_PATH", path)
-
-            path = resource_filename(pkg, static_path)
-            if not os.path.isdir(path):
-                raise ValueError('path not found: ' + path)
-            self.static_path.insert(0, path)
+                path = resource_filename(pkg, static_path)
+                if path not in STATIC_PATH:
+                    self.log_info('  + static path : %s', path)
+                    if not os.path.isdir(path):
+                        raise ValueError('path not found: ' + path)
+                    STATIC_PATH.insert(0, path)
+                    self.log_info("    added to STATIC_PATH")
+                else:
+                    self.log_info("    already in STATIC_PATH")
 
         Bottle.__init__(self)
 
@@ -42,12 +49,11 @@ class YoupiBottleApp(Bottle, LogMixin):
         self.panel = panel
 
         self.route('/help', 'GET', callback=self.get_help)
+        self.route('/static/<filepath:path>', 'GET', callback=self.serve_static)
 
     def get_help(self):
         return {'routes': [r.method + ' ' + r.rule for r in self.routes]}
 
-
-class YoupiUIBottleApp(YoupiBottleApp):
     def get_context(self, **kwargs):
         return {}
 
@@ -57,11 +63,13 @@ class YoupiUIBottleApp(YoupiBottleApp):
     def serve_static(self, filepath):
         self.log_debug('requesting static file: %s', filepath)
 
-        last_path = self.static_path[-1]
-        for path in self.static_path:
+        last_path = STATIC_PATH[-1]
+        for path in STATIC_PATH:
             try:
+                self.log_debug('-> found in ' + path)
                 return static_file(filepath, root=path)
             except HTTPError:
                 if path == last_path:
+                    self.log_error('static file not found: %s', filepath)
                     raise
 

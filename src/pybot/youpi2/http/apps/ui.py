@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from pybot.youpi2.http.base import YoupiUIBottleApp
+from pybot.youpi2.http.base import YoupiBottleApp
 from pybot.youpi2.http.__version__ import version
 
 __author__ = 'Eric Pascual'
 
 
-class UIApp(YoupiUIBottleApp):
+class UIApp(YoupiBottleApp):
     def __init__(self, *args, **kwargs):
         super(UIApp, self).__init__(*args, **kwargs)
 
